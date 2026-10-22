@@ -1,0 +1,215 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tomates_oeste",
+        "nome": "Tomates do Oeste",
+        "source_url": "https://maps.app.goo.gl/hawVq8WysLn2pah29"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.3514637,
+          39.1312465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "framboesa_2",
+        "nome": "Framboesa Encantada 2",
+        "source_url": "https://maps.app.goo.gl/jz5Z8UA2KFo1CiUp8"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.3539127,
+          39.1308297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "fenomeno",
+        "nome": "Fenómeno Galopante",
+        "source_url": "https://maps.app.goo.gl/N1xd4EJFAyiFHWhd6"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.336234,
+          39.125346
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "framboesa_1",
+        "nome": "Framboesa Encantada 1",
+        "source_url": "https://maps.app.goo.gl/UnaE3QaGNdDX4vcLA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.3231788,
+          39.1280683
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "varzea",
+        "nome": "Várzea Vibrante",
+        "source_url": "https://maps.app.goo.gl/n1dGkcqJH6inSEn39"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2871149,
+          39.1420348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "linos",
+        "nome": "Linos",
+        "source_url": "https://maps.app.goo.gl/9cXBSFvZ6V1E3VAH8"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2854968,
+          39.1407883
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ritual",
+        "nome": "Ritual Frutado",
+        "source_url": "https://maps.app.goo.gl/z131zyH2cjM1Ho2A8"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2839311,
+          39.1794127
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "deusas",
+        "nome": "Deusas da Montanha",
+        "source_url": "https://maps.app.goo.gl/4GYRkm3At9t5Rpnv7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.24318,
+          39.175363
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "greenaura",
+        "nome": "Greenaura",
+        "source_url": "https://maps.app.goo.gl/Aiz62EZh5axVAwtPA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2407252,
+          39.1812493
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "nutriveg_2",
+        "nome": "Nutriveg 2",
+        "source_url": "https://maps.app.goo.gl/RLqd4kgDAEwzuLWJA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2337741,
+          39.1906138
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "nutriveg_1",
+        "nome": "Nutriveg 1",
+        "source_url": "https://maps.app.goo.gl/QGYtFMEzHY2GK6Wa7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.217457,
+          39.192758
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "lagoa",
+        "nome": "Lagoa Bondosa",
+        "source_url": "https://maps.app.goo.gl/191Z48bhYctK7DZ29"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8.8465399,
+          38.7226458
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "demonstracao",
+        "nome": "Campo de Demonstração Frutas Patrícia Pilar",
+        "source_url": "https://maps.app.goo.gl/rhfyuBnmBRLMp1qY8"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.3561807,
+          39.1280688
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "sede",
+        "nome": "Frutas Patrícia Pilar",
+        "source_url": "https://maps.app.goo.gl/jAQ9aumD7GnAV54fA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.2950689,
+          39.1425869
+        ]
+      }
+    }
+  ]
+}

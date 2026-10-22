@@ -1,0 +1,11 @@
+Quero que programes este projeto novo: um mundo 3D interativo do Grupo Patrícia Pilar, em português de Portugal, que permita andar a pé com uma personagem em terceira pessoa e conduzir entre explorações, com minimapa, veículos da empresa e consulta de equipas e culturas.
+
+Lê primeiro 00_COMECAR_AQUI.md, 02_REQUISITOS.md, dados_exploracoes.json e inspeciona as referências visuais. Este projeto é independente das apps de gestão anteriores. Ainda não existe aplicação implementada. Trabalha nesta pasta e cria código real, modular, executável e documentado.
+
+Começa pela primeira versão jogável: Tomates do Oeste e Framboesa Encantada 2, com personagem, câmara, colisões, carro conduzível, entrada/saída do veículo, minimapa e painéis de informação com os dados fornecidos. Prepara o catálogo das 13 explorações e sede desde o início. Acrescenta o Campo de Demonstração ao percurso quando a sua localização estiver confirmada.
+
+Investiga a solução de mapas reais em documentação oficial atual antes de escolher fornecedor e bibliotecas. Google Maps é a referência pretendida, mas a integração deve respeitar APIs, permissões e custos; não extrair tiles, modelos ou imagens por métodos não autorizados. Não prometer conversão automática para um jogo. Não inventar coordenadas nem distâncias. Geometria aproximada deve estar explicitamente identificada. Se uma chave ou localização faltar, implementa o modo local de demonstração e deixa a integração real preparada e documentada, sem bloquear o desenvolvimento independente.
+
+Usa as imagens fornecidas para forma e implantação das estufas, não como garantia de medidas precisas. Não desenhes os contornos pretos no cenário. Não inventes nomes ou responsáveis. Mantém culturas editáveis por período e pessoas associáveis a várias explorações. Veículos em simulação, não rastreio real. A carrinha do Camacho é da Agropilar; referências dos veículos ainda por fornecer.
+
+Não te limites a produzir um plano ou uma imagem: implementa, executa as verificações adequadas e entrega instruções para abrir e experimentar. Escolhe a tecnologia depois de avaliar o ambiente e o requisito de execução; documenta a escolha. Não atives serviços pagos nem publiques externamente sem autorização. Termina com o que funciona, como foi testado e as limitações concretas.

@@ -1,0 +1,268 @@
+{
+  "data_recolha": "2026-10-22",
+  "idioma": "pt-PT",
+  "estado": "Requisitos e referências; sem aplicação implementada",
+  "exploracoes": [
+    {
+      "id": "tomates_oeste",
+      "nome": "Tomates do Oeste",
+      "area_ha": 16,
+      "culturas_atuais": [
+        "Tomate",
+        "Pepino"
+      ],
+      "tecnico": "David",
+      "supervisao": "Cristina",
+      "maps_url": "https://maps.app.goo.gl/hawVq8WysLn2pah29",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/tomates_oeste.png",
+      "agronomo": "Emanuel Franco"
+    },
+    {
+      "id": "framboesa_2",
+      "nome": "Framboesa Encantada 2",
+      "area_ha": 9,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "César",
+      "supervisao": "Ernestina",
+      "maps_url": null,
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/framboesa_2.png"
+    },
+    {
+      "id": "fenomeno",
+      "nome": "Fenómeno Galopante",
+      "area_ha": 5,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Mariano",
+      "supervisao": "Bruno",
+      "maps_url": "https://maps.app.goo.gl/N1xd4EJFAyiFHWhd6",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/fenomeno.png"
+    },
+    {
+      "id": "framboesa_1",
+      "nome": "Framboesa Encantada 1",
+      "area_ha": 3,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Paulo",
+      "supervisao": "Luís",
+      "maps_url": "https://maps.app.goo.gl/UnaE3QaGNdDX4vcLA",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/framboesa_1.png"
+    },
+    {
+      "id": "varzea",
+      "nome": "Várzea Vibrante",
+      "area_ha": 7,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Mariano",
+      "supervisao": "Pedro",
+      "maps_url": "https://maps.app.goo.gl/n1dGkcqJH6inSEn39",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/varzea.png"
+    },
+    {
+      "id": "linos",
+      "nome": "Linos",
+      "area_ha": 35,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": null,
+      "supervisao": null,
+      "maps_url": "https://maps.app.goo.gl/9cXBSFvZ6V1E3VAH8",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/linos.png",
+      "observacoes": "Incorporada recentemente; responsáveis desconhecidos."
+    },
+    {
+      "id": "ritual",
+      "nome": "Ritual Frutado",
+      "area_ha": 18,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "José",
+      "supervisao": "Cátia",
+      "maps_url": "https://maps.app.goo.gl/z131zyH2cjM1Ho2A8",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/ritual.png"
+    },
+    {
+      "id": "deusas",
+      "nome": "Deusas da Montanha",
+      "area_ha": 18,
+      "culturas_atuais": [],
+      "tecnico": null,
+      "supervisao": null,
+      "maps_url": "https://maps.app.goo.gl/4GYRkm3At9t5Rpnv7",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/deusas.png",
+      "estado": "em_construcao",
+      "area_quase_concluida_ha": 4,
+      "niveis_terreno": 3,
+      "area_e_projetada": true
+    },
+    {
+      "id": "greenaura",
+      "nome": "Greenaura",
+      "area_ha": 5,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Francisco",
+      "supervisao": "Maria",
+      "maps_url": "https://maps.app.goo.gl/Aiz62EZh5axVAwtPA",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/greenaura.png"
+    },
+    {
+      "id": "nutriveg_2",
+      "nome": "Nutriveg 2",
+      "area_ha": 2.5,
+      "culturas_atuais": [
+        "Pepino"
+      ],
+      "tecnico": "Guilherme",
+      "supervisao": "Natália",
+      "maps_url": "https://maps.app.goo.gl/RLqd4kgDAEwzuLWJA",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/nutriveg_2.png",
+      "numero_estufas": 11,
+      "estrutura": "Estufas pequenas, baixas, em madeira",
+      "apoio_agronomico": "Emanuel Franco"
+    },
+    {
+      "id": "nutriveg_1",
+      "nome": "Nutriveg 1",
+      "area_ha": 12,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Guilherme",
+      "supervisao": "Isabel",
+      "maps_url": "https://maps.app.goo.gl/QGYtFMEzHY2GK6Wa7",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/nutriveg_1.png",
+      "apoio_agronomico": "Emanuel Franco",
+      "manutencao": "David",
+      "identidade_david_manutencao": "Por confirmar se é o mesmo David da Tomates do Oeste"
+    },
+    {
+      "id": "lagoa",
+      "nome": "Lagoa Bondosa",
+      "area_ha": 16,
+      "culturas_atuais": [
+        "Tomate",
+        "Pepino",
+        "Courgete"
+      ],
+      "tecnico": "Etivaldo",
+      "supervisao": "Ana",
+      "maps_url": "https://maps.app.goo.gl/191Z48bhYctK7DZ29",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/lagoa.png",
+      "apoio_tecnico": "César, o mesmo da Framboesa Encantada 2"
+    },
+    {
+      "id": "demonstracao",
+      "nome": "Campo de Demonstração Frutas Patrícia Pilar",
+      "area_ha": 0.73,
+      "culturas_atuais": [
+        "Tomate"
+      ],
+      "tecnico": "Emanuel Franco",
+      "supervisao": "Cristina",
+      "maps_url": "https://maps.app.goo.gl/rhfyuBnmBRLMp1qY8",
+      "coordenadas": null,
+      "geometria": null,
+      "referencia_imagem": "referencias/demonstracao.png",
+      "tipo": "demonstracao_ensaios",
+      "distancia_declarada_to_m": 700,
+      "numero_variedades_aproximado": 200,
+      "tipologias": [
+        "Cacho",
+        "Xuxa",
+        "Salada",
+        "Salada rosa",
+        "Cherry",
+        "Chocolate",
+        "Azul"
+      ],
+      "visitantes": [
+        "Agricultores parceiros",
+        "Compradores de tomate",
+        "Empresas de sementes"
+      ],
+      "empresas_exemplo_declaradas": [
+        "FITO",
+        "Panadora"
+      ]
+    }
+  ],
+  "sede": {
+    "nome": "Frutas Patrícia Pilar",
+    "maps_url": "https://maps.app.goo.gl/jAQ9aumD7GnAV54fA",
+    "referencia_imagem": "referencias/sede.png",
+    "coordenadas": null,
+    "funcoes": [
+      "Receção das colheitas",
+      "Embalamento de tomate, pera Rocha e maçã",
+      "Leilão",
+      "Expedição",
+      "IT",
+      "RH",
+      "Contabilidade",
+      "Compras"
+    ],
+    "cliente_exemplo": "Mercadona",
+    "layout_interior": null
+  },
+  "equipas_transversais": {
+    "controlo_biologico": [
+      "Mariana",
+      "Lilia"
+    ],
+    "solaene": "Diana",
+    "agropilar": "Judite",
+    "rh": "Andreia",
+    "coordenacao_solaene_agropilar_rh": "Dulce",
+    "agropilar_equipa_associada_varzea": {
+      "Edinaldo": "Manutenção de todas as explorações",
+      "Camacho": "Instalação de rega e bombagem em várias explorações; carrinha Agropilar solicitada"
+    },
+    "abrangencia_departamentos": "Confirmar abrangência global de CB, Solaene, Judite, RH e Dulce; foram apresentados inicialmente no contexto da Tomates do Oeste."
+  },
+  "totais": {
+    "numero_exploracoes": 13,
+    "area_excluindo_deusas_ha": 129.23,
+    "area_projetada_deusas_ha": 18,
+    "total_incluindo_projeto_ha": 147.23
+  },
+  "referencia_mao_obra": {
+    "pessoas_por_ha_min": 4,
+    "pessoas_por_ha_max": 8,
+    "tipo": "Estimativa indicada pelo utilizador; não é efetivo real"
+  }
+}

@@ -1,0 +1,155 @@
+[
+  {
+    "id": "tomates_oeste",
+    "nome": "Tomates do Oeste",
+    "source_url": "https://maps.app.goo.gl/hawVq8WysLn2pah29",
+    "checked_at": "2026-10-22T23:23:23.132736+00:00",
+    "resolved_url": "https://www.google.com/maps/place/T.O.+-+Tomates+do+Oeste/@39.1333091,-9.3513046,1040m/data=!3m1!1e3!4m6!3m5!1s0xd1f318ef2db40e1:0x792442653c4d4dc0!8m2!3d39.1312465!4d-9.3514637!16s%2Fg%2F11jv6tkq4q?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=2626d22a-582c-4abe-aa04-cd6fa127e41f",
+    "lat": 39.1312465,
+    "lng": -9.3514637,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "framboesa_2",
+    "nome": "Framboesa Encantada 2",
+    "source_url": "https://maps.app.goo.gl/jz5Z8UA2KFo1CiUp8",
+    "checked_at": "2026-10-22T23:25:45.867790+00:00",
+    "status": "resolved",
+    "lat": 39.1308297,
+    "lng": -9.3539127,
+    "coordinate_kind": "place_pin"
+  },
+  {
+    "id": "fenomeno",
+    "nome": "Fenómeno Galopante",
+    "source_url": "https://maps.app.goo.gl/N1xd4EJFAyiFHWhd6",
+    "checked_at": "2026-10-22T23:23:23.134583+00:00",
+    "resolved_url": "https://www.google.com/maps/search/39.125346,+-9.336234?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=c5271555-29cc-4bca-85d9-bb7354751c54",
+    "status": "resolved",
+    "lat": 39.125346,
+    "lng": -9.336234,
+    "coordinate_kind": "shared_coordinate"
+  },
+  {
+    "id": "framboesa_1",
+    "nome": "Framboesa Encantada 1",
+    "source_url": "https://maps.app.goo.gl/UnaE3QaGNdDX4vcLA",
+    "checked_at": "2026-10-22T23:23:23.134928+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Framboesa+Encantada,+lda/@39.1278932,-9.3256981,1034m/data=!3m1!1e3!4m6!3m5!1s0xd1f303353bf503b:0xece79d002f3744b9!8m2!3d39.1280683!4d-9.3231788!16s%2Fg%2F11f0wmd311?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=fb64ecb6-8358-413f-b200-7f2b8875bf4e",
+    "lat": 39.1280683,
+    "lng": -9.3231788,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "varzea",
+    "nome": "Várzea Vibrante",
+    "source_url": "https://maps.app.goo.gl/n1dGkcqJH6inSEn39",
+    "checked_at": "2026-10-22T23:23:23.135441+00:00",
+    "resolved_url": "https://www.google.com/maps/place/V%C3%81RZEA+VIBRANTE+Greenhouse/@39.1368674,-9.2953366,2729m/data=!3m1!1e3!4m6!3m5!1s0xd1f3138dec86921:0x37576ba6e547490!8m2!3d39.1420348!4d-9.2871149!16s%2Fg%2F11v5bjx0py?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=aee2396d-c9c5-45a5-9539-604ad870fc3e",
+    "lat": 39.1420348,
+    "lng": -9.2871149,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "linos",
+    "nome": "Linos",
+    "source_url": "https://maps.app.goo.gl/9cXBSFvZ6V1E3VAH8",
+    "checked_at": "2026-10-22T23:23:23.135849+00:00",
+    "resolved_url": "https://www.google.com/maps/place/RUA+CASAL+DA+LAPA+No+11/@39.1410462,-9.2844625,2465m/data=!3m1!1e3!4m6!3m5!1s0xd1f31000363f22d:0x87b20227bbfa5e1!8m2!3d39.1407883!4d-9.2854968!16s%2Fg%2F11yv447z0w?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=e79388c9-c8e6-4eaa-946b-423f65e36736",
+    "lat": 39.1407883,
+    "lng": -9.2854968,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "ritual",
+    "nome": "Ritual Frutado",
+    "source_url": "https://maps.app.goo.gl/z131zyH2cjM1Ho2A8",
+    "checked_at": "2026-10-22T23:23:23.993522+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Greenhouse+Vale+da+Borra-GPP/@39.1796225,-9.2843155,1358m/data=!3m1!1e3!4m6!3m5!1s0xd1f31001a6174ef:0x6a57dca464670881!8m2!3d39.1794127!4d-9.2839311!16s%2Fg%2F11l_30nbj0?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=3d9b8cca-3144-4296-87af-7a4385dfb3a7",
+    "lat": 39.1794127,
+    "lng": -9.2839311,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "deusas",
+    "nome": "Deusas da Montanha",
+    "source_url": "https://maps.app.goo.gl/4GYRkm3At9t5Rpnv7",
+    "checked_at": "2026-10-22T23:23:24.023216+00:00",
+    "resolved_url": "https://www.google.com/maps/search/39.175363,+-9.243180?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=67583a50-7060-421e-960c-9a3fb61ceb59",
+    "status": "resolved",
+    "lat": 39.175363,
+    "lng": -9.24318,
+    "coordinate_kind": "shared_coordinate"
+  },
+  {
+    "id": "greenaura",
+    "nome": "Greenaura",
+    "source_url": "https://maps.app.goo.gl/Aiz62EZh5axVAwtPA",
+    "checked_at": "2026-10-22T23:23:24.515039+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Greenaura/@39.1833396,-9.2454576,2532m/data=!3m1!1e3!4m6!3m5!1s0xd1f3300132197e7:0xf9367a091f832198!8m2!3d39.1812493!4d-9.2407252!16s%2Fg%2F11wx6z33xm?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=383be0cb-e1f3-4805-8145-707905c8263c",
+    "lat": 39.1812493,
+    "lng": -9.2407252,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "nutriveg_2",
+    "nome": "Nutriveg 2",
+    "source_url": "https://maps.app.goo.gl/RLqd4kgDAEwzuLWJA",
+    "checked_at": "2026-10-22T23:23:24.524128+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Nutriveg+2/@39.190475,-9.2380539,1372m/data=!3m1!1e3!4m6!3m5!1s0xd1f33000d2806b7:0xeed7f62bd28ab4dd!8m2!3d39.1906138!4d-9.2337741!16s%2Fg%2F11yzrqp7zm?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=eb554187-d967-4049-a27a-0697e2600f9e",
+    "lat": 39.1906138,
+    "lng": -9.2337741,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "nutriveg_1",
+    "nome": "Nutriveg 1",
+    "source_url": "https://maps.app.goo.gl/QGYtFMEzHY2GK6Wa7",
+    "checked_at": "2026-10-22T23:23:24.643623+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Nutriveg+Campelos/@39.1926484,-9.2183945,433m/data=!3m1!1e3!4m6!3m5!1s0xd1f330074b26437:0xa4c46110b73dcc35!8m2!3d39.192758!4d-9.217457!16s%2Fg%2F11ykxcckfl?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=14a7df48-821d-4250-a399-83e80de9f109",
+    "lat": 39.192758,
+    "lng": -9.217457,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "lagoa",
+    "nome": "Lagoa Bondosa",
+    "source_url": "https://maps.app.goo.gl/191Z48bhYctK7DZ29",
+    "checked_at": "2026-10-22T23:23:24.683353+00:00",
+    "resolved_url": "https://www.google.com/maps/place/LAGOA+BONDOSA,+UNIPESSOAL+LDA,+ALCOCHETE/@38.7304295,-8.8555202,2453m/data=!3m1!1e3!4m6!3m5!1s0xd193f0014789425:0x1187979963759fdc!8m2!3d38.7226458!4d-8.8465399!16s%2Fg%2F11xl1sc0ct?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=ce4fc99b-7752-4321-8123-2ce01340200b",
+    "lat": 38.7226458,
+    "lng": -8.8465399,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "demonstracao",
+    "nome": "Campo de Demonstração Frutas Patrícia Pilar",
+    "source_url": "https://maps.app.goo.gl/rhfyuBnmBRLMp1qY8",
+    "checked_at": "2026-10-22T23:23:24.687442+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Campo+Demonstra%C3%A7%C3%A3o+Frutas+Patricia+Pilar+-+Portugal/@39.1272007,-9.3563537,504m/data=!3m1!1e3!4m6!3m5!1s0xd1f310072cf34bf:0xafdec3ff714facb9!8m2!3d39.1280688!4d-9.3561807!16s%2Fg%2F11zy8x4x5f?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=7b45e572-fe8a-401b-84ee-c77361b5cf6f",
+    "lat": 39.1280688,
+    "lng": -9.3561807,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  },
+  {
+    "id": "sede",
+    "nome": "Frutas Patrícia Pilar",
+    "source_url": "https://maps.app.goo.gl/jAQ9aumD7GnAV54fA",
+    "checked_at": "2026-10-22T23:23:24.823727+00:00",
+    "resolved_url": "https://www.google.com/maps/place/Frutas+Patr%C3%ADcia+Pilar/@39.1405444,-9.2905241,1445m/data=!3m1!1e3!4m6!3m5!1s0xd1f3190d564f5b5:0xd0ab4887727c3baa!8m2!3d39.1425869!4d-9.2950689!16s%2Fg%2F11gdz2z_rr?entry=tts&g_ep=EgoyMDI2MTAxOS4wIPu8ASoASAFQAw%3D%3D&skid=cea4aee3-1b8c-41f7-8766-8dacd0395b0e",
+    "lat": 39.1425869,
+    "lng": -9.2950689,
+    "coordinate_kind": "place_pin",
+    "status": "resolved"
+  }
+]

@@ -1,0 +1,22 @@
+PATRÍCIA PILAR · MUNDO 3D · 0.3
+
+1. No GitHub, escolhe Code → Download ZIP.
+2. No Windows, clica com o botão direito no ZIP e escolhe Extrair tudo.
+3. Na pasta extraída, abre JOGAR.html no Chrome ou Edge.
+4. Carrega em Começar a explorar.
+
+O jogo completo está incluído em docs/index.html. JOGAR.html abre esse ficheiro.
+Não abras o index.html da raiz, que pertence ao código de desenvolvimento.
+Não é necessário instalar Node ou configurar uma chave API para experimentar.
+
+W/A/S/D move; Shift corre; arrastar o rato roda a câmara; E entra/sai do veículo;
+Espaço trava; F consulta uma pessoa próxima; C abre conversas simuladas;
+R regressa ao parque; Esc pausa. O botão Mapa mostra os 14 locais fornecidos.
+
+Em ? podes alterar a qualidade gráfica. Os modelos ainda são aproximados e não
+igualam o realismo da imagem de conceito. A implantação do percurso jogável é
+provisória, separada dos pontos geográficos do mapa regional.
+
+Se não abrir automaticamente, abre docs/index.html diretamente no Chrome/Edge.
+Requer WebGL2; recomenda-se aceleração gráfica. Exporta os dados para conservar
+as tuas alterações, porque o armazenamento de ficheiros locais varia por navegador.
