@@ -67,10 +67,10 @@ export const EXTERNAL_SUPPORT = [
       "Apoio aos agricultores referidos; lista de produtores e distribuição por exploração a confirmar.",
   },
 ];
-export function nearbyCharacter(state, radius = 14) {
+export function nearbyCharacter(state, radius = 6) {
   if (state.driving) return null;
   return (
-    CHARACTERS.map((c) => ({
+    (state.characters || CHARACTERS).map((c) => ({
       ...c,
       distance: Math.hypot(c.x - state.player.x, c.z - state.player.z),
     }))

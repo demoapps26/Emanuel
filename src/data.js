@@ -1,3 +1,4 @@
+import { FARM_IDS } from "./sites.js";
 import { validCoordinate } from "./geography.js";
 import suppliedLocations from "../dados/localizacoes_maps.json" with { type: "json" };
 import {
@@ -8,7 +9,7 @@ import {
 } from "./characters.js";
 import original from "../materiais/Patricia_Pilar_Mundo_3D_Codex/dados_exploracoes.json" with { type: "json" };
 export const STORAGE_KEY = "pp-mundo3d-v1";
-export const MODELLED = ["tomates_oeste", "framboesa_2"];
+export const MODELLED = FARM_IDS;
 const clone = (value) => JSON.parse(JSON.stringify(value));
 export const identityName = (name) =>
   name

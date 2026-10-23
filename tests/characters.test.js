@@ -24,8 +24,8 @@ test("one rendered entity per person is enforced, independent of farm membership
 test("consultation selects a nearby named character and is disabled while driving", () => {
   const s = createState();
   assert.equal(nearbyCharacter(s), null);
-  s.player.x = 25;
-  s.player.z = 96;
+  s.player.x = s.characters[0].x-2;
+  s.player.z = s.characters[0].z;
   assert.equal(nearbyCharacter(s).id, "nuno");
   s.driving = true;
   assert.equal(nearbyCharacter(s), null);

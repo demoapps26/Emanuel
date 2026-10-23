@@ -1,6 +1,8 @@
 import { chromium, expect } from "@playwright/test";
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
+import { SITE_IDS, getSiteLayout } from "../src/sites.js";
+import { VEHICLE_NAMES } from "../src/fleet.js";
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:5173";
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
@@ -11,6 +13,7 @@ const page = await browser.newPage({
   viewport: { width: 1280, height: 800 },
   acceptDownloads: true,
 });
+page.setDefaultTimeout(45000);
 const googleRequests = [];
 page.on("request", (req) => {
   if (/googleapis\.com|gstatic\.com/.test(new URL(req.url()).hostname))
@@ -35,140 +38,157 @@ async function hold(keys, ms) {
   for (const key of keys) await page.keyboard.up(key);
   await page.waitForTimeout(150);
 }
+const poll = (fn, timeout = 30000) => expect.poll(fn, { timeout, intervals: [100, 250, 500] });
+const position = (s) => ({ x: Number(s.x), z: Number(s.z) });
+const distanceFrom = (a, b) => Math.hypot(Number(a.x) - Number(b.x), Number(a.z) - Number(b.z));
+async function whileKey(key, fn) {
+  await page.keyboard.down(key);
+  try { return await fn(); }
+  finally { await page.keyboard.up(key); }
+}
+async function closeOpenPanel() {
+  if (await page.locator("#panel").isVisible()) await page.locator("#close-panel").click();
+}
+async function visitSite(id) {
+  await closeOpenPanel();
+  await page.locator("#open-catalog").click();
+  await page.locator(`button[data-site="${id}"]`).click();
+  await expect(page.locator("#resume-site")).toBeVisible();
+  await page.locator("#resume-site").click();
+  await poll(async () => (await state()).sceneSite, 45000).toBe(id);
+  await expect(page.locator("#panel")).not.toBeVisible();
+  await poll(async () => Number((await state()).blockCount)).toBe(getSiteLayout(id).blocks.length);
+}
+async function approachVehicle(kind) {
+  await closeOpenPanel();
+  await page.locator("#open-fleet").click();
+  await expect(page.locator("[data-approach]")).toHaveCount(8);
+  await page.locator(`[data-approach="${kind}"]`).click();
+  await expect(page.locator("#panel")).not.toBeVisible();
+  await page.keyboard.press("e");
+  await poll(async () => (await state()).driving).toBe("true");
+  await poll(async () => (await state()).vehicle).toBe(kind);
+}
+async function brake() {
+  await whileKey("Space", async () => {
+    await poll(async () => Math.abs(Number((await state()).speed))).toBeLessThan(0.08);
+  });
+}
+
 await mkdir("test-results", { recursive: true });
 await writeFile(
   "test-results/browser-report.json",
   JSON.stringify({ status: "running", base, results: [], errors: [] }, null, 2),
 );
 try {
-  await page.goto(base);
-  await page.locator("#start").waitFor();
-  await check("WebGL renders a scene and the start screen works", async () => {
-    const hasGL = await page
-      .locator("#scene")
-      .evaluate((c) => Boolean(c.getContext("webgl2")));
-    assert.ok(hasGL);
+  await page.goto(base, { waitUntil: "domcontentloaded" });
+  await page.locator("#start").waitFor({ timeout: 90000 });
+  await check("WebGL starts the 0.4 world with one rendered identity per person", async () => {
+    if (new URL(base).pathname.endsWith(".html")) {
+      // The downloadable game must execute from this HTML, not redirect to a
+      // missing sibling or silently test the Vite development entry instead.
+      assert.equal(new URL(page.url()).pathname, new URL(base).pathname);
+      await expect(page.locator("script[src]")).toHaveCount(0);
+      await expect(page.locator('meta[http-equiv="refresh" i]')).toHaveCount(0);
+      assert.ok(await page.locator('script[type="module"]').evaluateAll(
+        scripts => scripts.reduce((length, script) => length + (script.textContent || "").length, 0),
+      ) > 100000, "The standalone HTML contains the actual bundled game");
+    }
+    assert.ok(await page.locator("#scene").evaluate(canvas => Boolean(canvas.getContext("webgl2"))));
     await page.locator("#start").click();
     await expect(page.locator("#welcome")).toBeHidden();
+    await poll(async () => (await state()).sceneSite).toBe("tomates_oeste");
     await expect(page.locator("#fps")).toContainText("FPS");
+    const ids=JSON.parse((await state()).personEntities);
+    assert.equal(ids.length,5); assert.equal(new Set(ids).size,5);
+    assert.equal((await state()).avatarPerson,"emanuel_franco");
+    assert.equal(Number((await state()).vehicleCount),8);
+    await poll(async () => Number((await state()).blockCount)).toBe(getSiteLayout("tomates_oeste").blocks.length);
   });
-  await check(
-    "keyboard movement and reset affect the rendered avatar",
-    async () => {
-      const before = await state();
-      await hold(["w"], 800);
-      const after = await state();
-      assert.ok(Number(after.z) < Number(before.z) - 2);
-      await page.keyboard.press("r");
-      await expect.poll(async () => Number((await state()).z)).toBe(82);
-    },
-  );
-  await check("mouse drag rotates the camera", async () => {
-    const before = Number((await state()).cameraYaw);
-    await page.mouse.move(700, 340);
-    await page.mouse.down();
-    await page.mouse.move(820, 370, { steps: 6 });
-    await page.mouse.up();
-    await expect
-      .poll(async () => Math.abs(Number((await state()).cameraYaw) - before))
-      .toBeGreaterThan(0.2);
+  await check("keyboard walking moves the person and reset returns to the active farm spawn", async () => {
+    const before=position(await state());
+    await whileKey("w", async () => { await poll(async () => distanceFrom(await state(),before)).toBeGreaterThan(.25); });
+    await page.keyboard.press("r");
+    const spawn=getSiteLayout("tomates_oeste").spawn;
+    await poll(async () => distanceFrom(await state(),spawn)).toBeLessThan(.05);
+  });
+  await check("mouse dragging rotates the third person camera", async () => {
+    const before=Number((await state()).cameraYaw);
+    await page.mouse.move(700,340);await page.mouse.down();
+    await page.mouse.move(820,370,{steps:6});await page.mouse.up();
+    await poll(async () => Math.abs(Number((await state()).cameraYaw)-before)).toBeGreaterThan(.2);
     await page.keyboard.press("r");
   });
-  await check("enter, drive, brake and exit the simulated car", async () => {
-    await page.keyboard.press("e");
-    await expect.poll(async () => (await state()).driving).toBe("true");
-    const before = await state();
-    await page.keyboard.down("w");
-    await page.waitForTimeout(1200);
-    assert.ok(Number((await state()).z) < Number(before.z) - 3);
-    await page.keyboard.press("e");
-    assert.equal((await state()).driving, "true");
-    await page.keyboard.up("w");
-    await hold(["Space"], 1000);
-    await page.keyboard.press("e");
-    await expect.poll(async () => (await state()).driving).toBe("false");
-    await page.keyboard.press("r");
-  });
-  await check(
-    "Agropilar van can be approached, entered and driven",
-    async () => {
-      await hold(["Shift", "d"], 3600);
-      await page.keyboard.press("e");
-      await expect.poll(async () => (await state()).vehicle).toBe("agropilar");
-      await expect.poll(async () => (await state()).driving).toBe("true");
-      const before = Number((await state()).x);
-      await hold(["w"], 1000);
-      assert.ok(Number((await state()).x) > before + 2);
-      await hold(["Space"], 1000);
-      await page.screenshot({ path: "test-results/agropilar.png" });
-      await page.keyboard.press("e");
-      await expect.poll(async () => (await state()).driving).toBe("false");
-      await page.keyboard.press("r");
-    },
-  );
-  for (const [kind, name, targetX] of [
-    ["biological", "controlo biológico", 88],
-    ["agricultural", "técnico agrícola", 111],
-  ]) {
-    await check(
-      `Carrinha de ${name} can be reached, driven and exited`,
-      async () => {
-        await page.keyboard.down("Shift");
-        await page.keyboard.down("s");
-        try {
-          await expect
-            .poll(async () => Number((await state()).z), {
-              timeout: 18000,
-              intervals: [75],
-            })
-            .toBeGreaterThan(131);
-        } finally {
-          await page.keyboard.up("s");
-          await page.keyboard.up("Shift");
-        } // Walk behind the parked row.
-        // Walk for lateral alignment; running can overshoot an adjacent van on software renderers.
-        await page.keyboard.down("d");
-        try {
-          await expect
-            .poll(async () => Number((await state()).x), {
-              timeout: 30000,
-              intervals: [75],
-            })
-            .toBeGreaterThan(targetX - 5);
-        } finally {
-          await page.keyboard.up("d");
-          await page.keyboard.up("Shift");
-        }
-        await page.keyboard.down("w");
-        try {
-          await expect
-            .poll(async () => Number((await state()).z), {
-              timeout: 10000,
-              intervals: [75],
-            })
-            .toBeLessThan(124);
-        } finally {
-          await page.keyboard.up("w");
-        }
+  const stoppedVehicles={};
+  for(const kind of ["technical","agropilar","biological","agricultural","truck","rigid_truck","tractor","orchard_tractor"]) {
+    await check(`${VEHICLE_NAMES[kind]} can be entered, driven, braked, reversed and exited`, async () => {
+      await approachVehicle(kind);
+      if(kind==="technical") {
+        await page.locator("#open-fleet").click();
+        for(const button of await page.locator("[data-approach]").all()) await expect(button).toBeDisabled();
+        await page.locator("#close-panel").click();
+      }
+      const before=position(await state());
+      await whileKey("w",async()=>{
+        await poll(async()=>distanceFrom(await state(),before)).toBeGreaterThan(.40);
+        await poll(async()=>Number((await state()).speed)).toBeGreaterThan(.70);
         await page.keyboard.press("e");
-        await expect.poll(async () => (await state()).vehicle).toBe(kind);
-        await expect.poll(async () => (await state()).driving).toBe("true");
-        const before = Number((await state()).x);
-        await hold(["w"], 800);
-        assert.ok(Number((await state()).x) > before + 1);
-        await hold(["Space"], 1000);
-        await page.screenshot({ path: `test-results/${kind}.png` });
-        await page.mouse.move(670, 350);
-        await page.mouse.down();
-        await page.mouse.move(890, 390, { steps: 6 });
-        await page.mouse.up();
-        await page.screenshot({ path: `test-results/${kind}-side.png` });
-        await page.keyboard.press("e");
-        await expect.poll(async () => (await state()).driving).toBe("false");
-        await page.keyboard.press("r");
-      },
-    );
+        await expect(page.locator("#toast")).toContainText(/[Pp][aá]ra|imobil|trav/i);
+        assert.equal((await state()).driving,"true");
+      });
+      await brake();
+      if(kind==="truck") {
+        const heading=Number((await state()).vehicleYaw);
+        await page.keyboard.down("w");await page.keyboard.down("a");
+        try {
+          await poll(async()=>Math.abs(Number((await state()).vehicleYaw)-heading)).toBeGreaterThan(.02);
+          await poll(async()=>Math.abs(Number((await state()).trailerYaw)-Number((await state()).vehicleYaw))).toBeGreaterThan(.005);
+        } finally {await page.keyboard.up("a");await page.keyboard.up("w");}
+        await brake();
+      }
+      const reverseFrom=position(await state());
+      await whileKey("s",async()=>{
+        await poll(async()=>Number((await state()).speed)).toBeLessThan(-.25);
+        await poll(async()=>distanceFrom(await state(),reverseFrom)).toBeGreaterThan(.15);
+      });
+      await brake();
+      stoppedVehicles[kind]=position(await state());
+      if(["truck","rigid_truck","tractor","orchard_tractor"].includes(kind))
+        await page.screenshot({path:`test-results/${kind}-driving.png`});
+      await page.keyboard.press("e");
+      await poll(async()=>(await state()).driving).toBe("false");
+      assert.equal((await state()).avatarPerson,"emanuel_franco");
+    });
   }
+  const identitiesBeforeTravel=JSON.parse((await state()).personEntities);
+  const visited=[];
+  for(const id of SITE_IDS) {
+    await check(`3D visit loads ${getSiteLayout(id).name} with its own photographic layout`,async()=>{
+      await visitSite(id);
+      const s=await state();visited.push(id);
+      assert.deepEqual(JSON.parse(s.personEntities),identitiesBeforeTravel);
+      assert.equal(s.avatarPerson,"emanuel_franco");assert.equal(s.driving,"false");
+      assert.equal(Number(s.blockCount),getSiteLayout(id).blocks.length);
+      assert.equal(Number(s.vehicleCount),8);
+      if(["tomates_oeste","deusas","nutriveg_2","sede"].includes(id))
+        await page.screenshot({path:`test-results/site-${id}.png`});
+    });
+  }
+  assert.equal(new Set(visited).size,14);
+  await check("travelling back preserves the parked truck rather than resetting the fleet",async()=>{
+    await visitSite("tomates_oeste");await approachVehicle("truck");
+    assert.ok(distanceFrom(await state(),stoppedVehicles.truck)<.10);
+    await page.keyboard.press("e");await poll(async()=>(await state()).driving).toBe("false");
+  });
+  await check("aerial inspection pauses walking and returns to the same farm",async()=>{
+    await page.locator("#aerial-toggle").click();
+    await poll(async()=>(await state()).aerial).toBe("true");
+    const before=position(await state());await hold(["w"],400);
+    assert.equal(distanceFrom(await state(),before),0);
+    await page.screenshot({path:"test-results/aerial-tomates-oeste.png"});
+    await page.locator("#aerial-toggle").click();await poll(async()=>(await state()).aerial).toBe("false");
+    assert.equal((await state()).sceneSite,"tomates_oeste");
+  });
   await check(
     "each shared person has one entity and one profile across all their farms",
     async () => {
@@ -216,42 +236,13 @@ try {
       assert.deepEqual(JSON.parse((await state()).personEntities), ids);
     },
   );
-  await check(
-    "a named character can be approached and consulted with F",
-    async () => {
-      await expect(page.locator("#scene")).toBeFocused();
-      await page.keyboard.down("Shift");
-      await page.keyboard.down("d");
-      try {
-        await expect
-          .poll(async () => Number((await state()).x), {
-            timeout: 12000,
-            intervals: [75],
-          })
-          .toBeGreaterThan(19);
-      } finally {
-        await page.keyboard.up("d");
-        await page.keyboard.up("Shift");
-      }
-      await page.keyboard.down("Shift");
-      await page.keyboard.down("s");
-      try {
-        await expect
-          .poll(async () => Number((await state()).z), {
-            timeout: 12000,
-            intervals: [75],
-          })
-          .toBeGreaterThan(95);
-      } finally {
-        await page.keyboard.up("s");
-        await page.keyboard.up("Shift");
-      }
-      await page.keyboard.press("f");
-      await expect(page.locator("#panel-title")).toHaveText("Nuno");
-      await page.locator("#close-panel").click();
-      await page.keyboard.press("r");
-    },
-  );
+  await check("a shared character can be found and consulted physically with F",async()=>{
+    await page.locator("#open-team").click();await page.locator('[data-person="nuno"]').click();
+    await page.locator("#find-person").click();
+    await expect(page.locator("#panel")).not.toBeVisible();
+    await page.keyboard.press("f");await expect(page.locator("#panel-title")).toHaveText("Nuno");
+    await page.locator("#close-panel").click();
+  });
   await check(
     "technical conversations show role-specific participants and distinct simulated outcomes",
     async () => {
@@ -313,7 +304,7 @@ try {
     "day-of-field goals reflect conversations, team consultation and driving",
     async () => {
       await page.locator("#open-day").click();
-      await expect(page.locator(".day-goal.done")).toHaveCount(3);
+      await expect(page.locator(".day-goal.done")).toHaveCount(4);
       await page.locator("#day-resume").click();
     },
   );
@@ -326,21 +317,12 @@ try {
     await page.locator("#resume").click();
     await expect(page.locator("#panel")).not.toBeVisible();
   });
-  await check(
-    "general map has the explicit local fallback and no geographic claims",
-    async () => {
-      await page.keyboard.press("m");
-      await expect(page.locator("#large-map")).toBeVisible();
-      await expect(page.locator("#panel-body")).toContainText(
-        "Distâncias comprimidas",
-      );
-      await page.locator("#panel-body summary").click();
-      await expect(page.locator("#map-status")).toContainText(
-        "Nenhum serviço Google",
-      );
-      await page.locator("#close-panel").click();
-    },
-  );
+  await check("local map describes the active layout as an approximation",async()=>{
+    await page.keyboard.press("m");await expect(page.locator("#large-map")).toBeVisible();
+    await expect(page.locator("#panel-body")).toContainText(/[Aa]proximad|estimad/);
+    await expect(page.locator("#geographic-settings")).toBeVisible();
+    await page.locator("#close-panel").click();
+  });
   await check(
     "real regional map uses supplied locations and Google stays disabled without a key",
     async () => {
@@ -354,6 +336,13 @@ try {
       await expect(page.locator("[data-location]")).toHaveCount(13);
       await page.locator('[data-fit="all"]').click();
       await expect(page.locator("[data-location]")).toHaveCount(14);
+      for (const id of SITE_IDS) {
+        await page.locator(`[data-geo-site="${id}"]`).click();
+        await expect(page.locator("#visit-geographic")).toBeVisible();
+        await expect(page.locator(".aerial-reference img")).toBeVisible();
+        await poll(() => page.locator(".aerial-reference img").evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+        await page.locator("#back-regional").click();
+      }
       await page.locator('[data-geo-site="tomates_oeste"]').click();
       await expect(page.locator(".aerial-reference img")).toBeVisible();
       await page.locator("#edit-point").click();
@@ -384,8 +373,9 @@ try {
       );
       await page.locator('button[data-site="sede"]').click();
       await expect(page.locator("#site-detail")).toContainText(
-        "não tem cenário",
+        "Receção",
       );
+      await expect(page.locator("#resume-site")).toBeVisible();
     },
   );
   await check(
@@ -516,6 +506,9 @@ try {
     "test-results/browser-report.json",
     JSON.stringify(
       {
+        status: "passed",
+        base,
+        visited,
         results,
         performance,
         renderer: "Chromium headless / SwiftShader software rendering",

@@ -17,13 +17,13 @@ A pedido do utilizador, **continuamos por agora sem chave API**. O percurso jog�
 
 A vista regional usa projeção equiretangular local, raio médio terrestre, origem 39.15° N, 9.30° W. A escala é consistente dentro dessa projeção, aproximada em relação ao terreno; não é um levantamento nem um mapa de estradas.
 
-O percurso jogável atual usa unidades de simulação e percursos comprimidos, sem conversão para latitude/longitude ou metros. As áreas em hectares são valores declarados e não medidas das malhas.
+A versão 0.4 tem 14 cenas locais (13 explorações e sede). As unidades procuram representar metros: personagens de cerca de 1,8 m e veículos proporcionais, mas os comprimentos, ângulos, alturas e limites de cada exploração foram estimados pelas referências. As áreas declaradas em hectares não são medições das malhas. O minimapa mantém escala local estimada e identifica essa limitação. As viagens entre explorações são rápidas; não existe uma rede contínua de estradas reais que una os locais. Ver `IMPLANTACOES.md`.
 
 O visualizador Google usa coordenadas geográficas e a escala do fornecedor, com parâmetro de câmara `range` em metros. Isso não garante precisão cadastral, dados recentes, reprodução exata dos limites, resolução das estufas ou cobertura 3D nestes locais. Um ponto confirmado identifica o local, mas não os seus limites ou acessos.
 
 O cálculo de distância da app usa uma esfera terrestre de raio médio 6 371 008,8 m. É uma aproximação geodésica entre pontos, não um percurso de condução, levantamento topográfico ou medida de área. Os testes usam coordenadas matemáticas sintéticas, não posições de explorações.
 
-A vista Google preparada é um **visualizador geográfico**. A personagem, os veículos e as colisões continuam no cenário local. Alinhar o mundo jogável a escala real, ajustar alturas ao terreno, definir vias e colisores e gerir carregamento a grandes distâncias é trabalho posterior. Não foi implementada extração de malhas ou conversão automática do Google Maps num jogo. A hipótese Map Tiles API/Photorealistic 3D Tiles com outro renderizador só deve ser avaliada se essa integração jogável for necessária e os termos permitirem o uso pretendido.
+A vista Google preparada é um **visualizador geográfico**. A personagem, os veículos e as colisões continuam nas cenas locais. Alinhar o mundo jogável a escala real, ajustar alturas ao terreno, definir vias e colisores e gerir carregamento a grandes distâncias é trabalho posterior. Não foi implementada extração de malhas ou conversão automática do Google Maps num jogo. A hipótese Map Tiles API/Photorealistic 3D Tiles com outro renderizador só deve ser avaliada se essa integração jogável for necessária e os termos permitirem o uso pretendido.
 
 ## Fontes oficiais consultadas
 

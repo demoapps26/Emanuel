@@ -15,8 +15,17 @@ const script = (await readFile("dist/assets/" + js[0], "utf8")).replace(
 );
 const style = await readFile("dist/assets/" + css[0], "utf8");
 const html = `<!doctype html>\n<html lang="pt-PT"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#174c3c"><title>Patrícia Pilar · Mundo 3D · Experimentar</title><style>${style}</style></head><body><div id="app"></div><script type="module">${script}</script></body></html>`;
-await mkdir(path.dirname(destination), { recursive: true });
-await writeFile(destination, html);
+// JOGAR.html is itself the complete app: Windows can open the extracted file
+// without following a redirect into a sibling folder that ZIP preview omitted.
+const destinations = new Set([destination]);
+if (!process.argv[2]) {
+  destinations.add(path.resolve("JOGAR.html"));
+  destinations.add(path.resolve("docs", "index.html"));
+}
+for (const output of destinations) {
+  await mkdir(path.dirname(output), { recursive: true });
+  await writeFile(output, html);
+}
 console.log(
   "Versão HTML autónoma:",
   destination,

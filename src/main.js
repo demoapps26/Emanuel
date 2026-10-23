@@ -3,11 +3,12 @@ import { availableConversations, conversationTurns } from "./conversations.js";
 import { confirmedLocations, distanceMetres } from "./geography.js";
 import { googleRequirements, openGoogle3D } from "./google-map.js";
 import { CHARACTERS, PLAYER_PERSON_ID, nearbyCharacter } from "./characters.js";
-import { VEHICLE_NAMES } from "./fleet.js";
+import { VEHICLE_NAMES, VEHICLE_SPECS } from "./fleet.js";
+import { FARM_IDS, SITE_IDS, getSiteLayout } from "./sites.js";
 import "./style.css";
 import { mapReadiness } from "./maps.js";
 import { createWorld, drawMap } from "./world.js";
-import { createState, step, toggleVehicle, activeSite } from "./simulation.js";
+import { createState, step, toggleVehicle, activeSite, travelToSite, approachVehicle, nearestVehicle, blocked, getObstacles, getBounds, localToWorld, vehicleFootprint } from "./simulation.js";
 import {
   loadData,
   saveData,
@@ -31,10 +32,10 @@ const fmt = (n) =>
   new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 2 }).format(n);
 $("#app").innerHTML = `
 <canvas id="scene" aria-label="Mundo agrícola 3D. Controla a personagem com W A S D; arrasta o rato para rodar a câmara." tabindex="0"></canvas>
-<header class="topbar"><a class="brand" href="#" aria-label="Grupo Patrícia Pilar, início"><span class="brand-symbol">❧</span><span>Grupo Patrícia Pilar<small>MUNDO 3D · EXPLORAÇÕES</small></span></a><nav aria-label="Navegação"><button id="explore" class="nav active">Explorar</button><button id="open-map" class="nav">Mapa</button><button id="open-catalog" class="nav">Explorações <span>13</span></button><button id="open-team" class="nav">Equipa</button><button id="open-talk" class="nav">Conversas</button></nav><div class="top-actions"><span class="demo-badge"><i></i> Demonstração local</span><button id="help" class="icon-button" aria-label="Ajuda e controlos">?</button></div></header>
-<main class="hud" id="hud"><div class="location"><span class="eyebrow">A EXPLORAR</span><h1 id="location-name">Caminhos da exploração</h1><p id="location-detail">Tomates do Oeste & Framboesa Encantada 2</p><button id="site-info" class="text-button">Consultar exploração <span>↗</span></button></div><button class="mission-chip" id="open-day">Dia de campo · <span id="day-count">0/4</span> →</button><div class="scene-note">Cenário 3D aproximado <span>·</span> 14 locais no mapa</div><aside class="minimap-card"><div class="map-caption"><span><i></i> PERCURSO LOCAL</span><button id="expand-map" aria-label="Ampliar mapa">⤢</button></div><canvas id="minimap" width="320" height="245" aria-label="Minimapa esquemático, sem escala geográfica"></canvas><div class="map-footer"><span>▲ A tua posição</span><span>Mapa esquemático</span></div></aside><div class="live-status"><span id="mode">A pé</span><strong id="speed">Pronto a explorar</strong><small id="fps">A medir desempenho…</small></div><div class="interaction" id="interaction"><kbd>E</kbd><span>Entrar no veículo</span></div></main>
+<header class="topbar"><a class="brand" href="#" aria-label="Grupo Patrícia Pilar, início"><span class="brand-symbol">❧</span><span>Grupo Patrícia Pilar<small>MUNDO 3D · EXPLORAÇÕES</small></span></a><nav aria-label="Navegação"><button id="explore" class="nav active">Explorar</button><button id="open-map" class="nav">Mapa</button><button id="open-catalog" class="nav">Explorações <span>13</span></button><button id="open-fleet" class="nav">Veículos</button><button id="open-team" class="nav">Equipa</button><button id="open-talk" class="nav">Conversas</button></nav><div class="top-actions"><span class="demo-badge"><i></i> Demonstração local</span><button id="help" class="icon-button" aria-label="Ajuda e controlos">?</button></div></header>
+<main class="hud" id="hud"><div class="location"><span class="eyebrow">A EXPLORAR</span><h1 id="location-name">Caminhos da exploração</h1><p id="location-detail">13 explorações e sede</p><button id="site-info" class="text-button">Consultar exploração <span>↗</span></button><div class="location-actions"><button id="aerial-toggle" class="text-button">Vista aérea · B</button><button id="change-site" class="text-button">Mudar local ↗</button><button id="go-to-greenhouses" class="text-button">Ir às estufas →</button></div></div><button class="mission-chip" id="open-day">Dia de campo · <span id="day-count">0/4</span> →</button><div class="scene-note">Cenário 3D aproximado <span>·</span> 14 locais no mapa</div><aside class="minimap-card"><div class="map-caption"><span><i></i> PERCURSO LOCAL</span><button id="expand-map" aria-label="Ampliar mapa">⤢</button></div><canvas id="minimap" width="320" height="245" aria-label="Minimapa esquemático, sem escala geográfica"></canvas><div class="map-footer"><span>▲ A tua posição</span><span>Mapa esquemático</span></div></aside><div class="live-status"><span id="mode">A pé</span><strong id="speed">Pronto a explorar</strong><small id="fps">A medir desempenho…</small></div><div class="interaction" id="interaction"><kbd>E</kbd><span>Entrar no veículo</span></div></main>
 <footer class="controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Mover</span><span><kbd>⇧</kbd> Correr</span><span>Arrastar rato · Câmara</span><span><kbd>E</kbd> Veículo</span><span><kbd>M</kbd> Mapa</span><span><kbd>F</kbd> Pessoa</span><span><kbd>R</kbd> Reiniciar</span><button id="pause"><kbd>Esc</kbd> Pausa</button></footer>
-<div id="welcome" class="welcome"><div class="welcome-card"><span class="eyebrow">GRUPO PATRÍCIA PILAR</span><h2>Um novo olhar<br>sobre o campo.</h2><p>Um dia de campo: visita as explorações, conhece as pessoas e participa em conversas técnicas simuladas.</p><div class="welcome-sites"><span>01 · Tomates do Oeste</span><span>02 · Framboesa Encantada 2</span></div><button id="start" class="primary">Começar a explorar <span>→</span></button><small>Protótipo para computador · Teclado e rato<br>Cenário e veículos aproximados. Sem rastreio real.</small></div><div class="version">VERSÃO JOGÁVEL <span>0.3</span></div></div>
+<div id="welcome" class="welcome"><div class="welcome-card"><span class="eyebrow">GRUPO PATRÍCIA PILAR</span><h2>Um novo olhar<br>sobre o campo.</h2><p>Um dia de campo: visita as explorações, conhece as pessoas e participa em conversas técnicas simuladas.</p><div class="welcome-sites"><span>13 explorações + sede</span><span>8 veículos conduzíveis · 2 tratores</span></div><button id="start" class="primary">Começar a explorar <span>→</span></button><small>Protótipo para computador · Teclado e rato<br>Cenário e veículos aproximados. Sem rastreio real.</small></div><div class="version">VERSÃO JOGÁVEL <span>0.4</span></div></div>
 <dialog id="panel" aria-labelledby="panel-title"><div class="panel-top"><div><span class="eyebrow" id="panel-kicker">GRUPO PATRÍCIA PILAR</span><h2 id="panel-title">Explorações</h2></div><button id="close-panel" class="icon-button" aria-label="Fechar painel">×</button></div><div id="panel-body"></div></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 `;
@@ -60,6 +61,7 @@ try {
 let state = createState(),
   started = false,
   paused = false,
+  aerialMode = false,
   input = {},
   cameraYaw = 0,
   selected = "tomates_oeste",
@@ -131,6 +133,74 @@ function persist(next, message = "Alterações guardadas neste navegador.") {
 function clone() {
   return structuredClone(data);
 }
+function placeAtFarmEntrance() {
+  const layout=getSiteLayout(state.siteId),obstacles=[...getObstacles(state),...[state.car,...state.parkedCars].flatMap(vehicleFootprint)],bounds=getBounds(state);
+  const blocks=[...layout.blocks].sort((a,b)=>(b.z+b.d/2)-(a.z+a.d/2));
+  for(const block of blocks)for(const side of[1,-1])for(const across of[0,-.28,.28]) {
+    const point=localToWorld(block.w*across,side*(block.d/2+6),{x:block.x,z:block.z,yaw:block.rotation||0});
+    if(!blocked(point.x,point.z,.45,obstacles,bounds)) {
+      Object.assign(state.player,{...point,yaw:(block.rotation||0)+(side<0?Math.PI:0)});
+      return true;
+    }
+  }
+  return false;
+}
+function goToGreenhouses() {
+  if(state.driving){toast("Pára e sai do veículo para ir às estufas a pé.");return;}
+  placeAtFarmEntrance();aerialMode=false;input={};world?.resetCamera();
+  $("#aerial-toggle").textContent="Vista aérea · B";$("#scene").focus();
+}
+function visitSite(id) {
+  if (!world) return;
+  state = travelToSite(state, id);
+  placeAtFarmEntrance();
+  selected = id;
+  aerialMode = false;
+  $("#aerial-toggle").textContent = "Vista aérea · B";
+  cameraYaw = 0;
+  world.resetCamera();
+  input = {};
+  if (!started) {
+    started = true;
+    document.body.classList.add("started");
+    $("#welcome").hidden = true;
+  }
+  closePanel();
+  lastSite = null;
+  toast(`A explorar ${getSiteLayout(id).name}. O parque de veículos é uma zona virtual de treino.`);
+}
+function toggleAerial() {
+  if (!started || panel.open) return;
+  aerialMode = !aerialMode;
+  input = {};
+  $("#aerial-toggle").textContent = aerialMode ? "Voltar à personagem · B" : "Vista aérea · B";
+  world?.resetCamera();
+}
+function openFleet() {
+  show("Veículos e equipamentos", "OITO VEÍCULOS · CONDUÇÃO SIMULADA", `<p>Carros e carrinhas para acompanhamento, dois camiões para transporte e dois tratores para a operação agrícola. Seleciona um veículo para te aproximares da cabina; carrega em <kbd>E</kbd> para entrar.</p>${state.driving ? '<p class="notice">Pára e sai do veículo atual com E antes de te aproximares de outro.</p>' : ""}<div class="fleet-grid">${Object.entries(VEHICLE_NAMES).map(([kind,name])=>`<article class="fleet-card" data-fleet-kind="${kind}"><span class="eyebrow">${kind.includes("tractor")?"OPERAÇÃO AGRÍCOLA":kind.includes("truck")?"TRANSPORTE":"APOIO TÉCNICO"}</span><h3>${escape(name)}</h3><p>${kind==="truck"?"Cabina e semirreboque articulado; atenção ao espaço de manobra e à marcha-atrás.":kind.includes("tractor")?"Velocidade reduzida, viragem própria e rodas dianteiras direcionais.":"Aceleração, direção, travagem e marcha-atrás simuladas."}</p><button class="secondary" data-approach="${kind}" ${state.driving?"disabled":""}>Ir até ao veículo →</button></article>`).join("")}</div><p class="muted">Modelos aproximados, sem simulação de cargas, hidráulicos ou operações reais. O parque adicional e a presença dos veículos são fictícios.</p>`, "fleet");
+  document.querySelectorAll("[data-approach]").forEach(button => button.onclick = () => {
+    const message = approachVehicle(state, button.dataset.approach);
+    aerialMode = false;
+    $("#aerial-toggle").textContent = "Vista aérea · B";
+    cameraYaw = 0;
+    world?.resetCamera();
+    closePanel();
+    toast(message);
+  });
+}
+function findPerson(id) {
+  if (state.driving) { toast("Pára e sai do veículo para ir ter com uma personagem."); return; }
+  const person = state.characters.find(p => p.id === id);
+  if (!person) return;
+  const obstacles = [...getObstacles(state),...[state.car,...state.parkedCars].flatMap(vehicleFootprint)], bounds = getBounds(state);
+  for (const [dx,dz] of [[-2,0],[2,0],[0,2],[0,-2]]) {
+    if (!blocked(person.x+dx,person.z+dz,.38,obstacles,bounds)) {
+      Object.assign(state.player,{x:person.x+dx,z:person.z+dz,yaw:Math.atan2(-dx,dz)});
+      aerialMode=false;world?.resetCamera();closePanel();toast(`Estás junto de ${person.name}. Carrega em F para conversar.`);return;
+    }
+  }
+  toast("Não foi encontrado espaço livre junto da personagem.");
+}
 function currentSite() {
   return activeSite(state) || selected;
 }
@@ -141,8 +211,8 @@ function openCatalog(id = selected) {
     "As nossas explorações",
     "PESSOAS, CULTURAS E TERRITÓRIO",
     `
-  <div class="catalog-summary"><div><strong>13<span> + sede</span></strong><small>Locais no catálogo</small></div><div><strong>${fmt(total.declared)} <span>ha</span></strong><small>Área declarada · sem Deusas</small></div><div><strong>${fmt(total.projected)} <span>ha</span></strong><small>Deusas · área projetada</small></div></div>
-  <div class="catalog-layout"><aside class="site-list" aria-label="Lista de explorações">${data.exploracoes.map((s) => `<button data-site="${s.id}" class="site-row ${s.id === selected ? "selected" : ""}"><span>${escape(s.nome)}</span><small>${MODELLED.includes(s.id) ? "● Cenário disponível" : s.area_e_projetada ? "Em construção · só registo" : "Só registo"}</small></button>`).join("")}<button data-site="sede" class="site-row ${selected === "sede" ? "selected" : ""}"><span>Frutas Patrícia Pilar</span><small>Sede · só registo</small></button></aside><section class="site-detail" id="site-detail"></section></div>
+  <div class="catalog-summary"><div><strong>13<span> + sede</span></strong><small>Locais para visitar em 3D</small></div><div><strong>${fmt(total.declared)} <span>ha</span></strong><small>Área declarada · sem Deusas</small></div><div><strong>${fmt(total.projected)} <span>ha</span></strong><small>Deusas · área projetada</small></div></div>
+  <div class="catalog-layout"><aside class="site-list" aria-label="Lista de explorações">${data.exploracoes.map((s) => `<button data-site="${s.id}" class="site-row ${s.id === selected ? "selected" : ""}"><span>${escape(s.nome)}</span><small>${MODELLED.includes(s.id) ? "● Cenário disponível" : s.area_e_projetada ? "Construção em 3D" : "Visitar em 3D"}</small></button>`).join("")}<button data-site="sede" class="site-row ${selected === "sede" ? "selected" : ""}"><span>Frutas Patrícia Pilar</span><small>● Sede em 3D</small></button></aside><section class="site-detail" id="site-detail"></section></div>
   <div class="data-tools"><button id="export-data" class="secondary">↓ Exportar dados</button><label class="secondary file-button">↑ Importar dados<input id="import-data" type="file" accept="application/json,.json"></label><span>Guardado localmente · exporta uma cópia para partilhar</span></div>`,
   );
   document
@@ -155,24 +225,27 @@ function openCatalog(id = selected) {
 function renderDetail() {
   const root = $("#site-detail");
   if (selected === "sede") {
-    root.innerHTML = `<span class="pill">SEDE · SÓ REGISTO</span><h3>${escape(data.sede.nome)}</h3><p>Receção, embalamento e expedição. A sede ainda não tem cenário 3D nem planta interior validada.</p><ul>${data.sede.funcoes.map((f) => `<li>${escape(f)}</li>`).join("")}</ul><p class="muted">Transporte simulado, sem integração comercial ou posições reais.</p>`;
+    root.innerHTML = `<span class="pill">SEDE · CENÁRIO EXTERIOR</span><h3>${escape(data.sede.nome)}</h3><p>Receção, embalamento e expedição. Volumes exteriores aproximados da referência aérea; sem planta interior validada.</p><ul>${data.sede.funcoes.map(f=>`<li>${escape(f)}</li>`).join("")}</ul><div class="detail-actions"><button id="resume-site" class="primary">Visitar em 3D →</button><button id="site-location" class="secondary">Localização e fotografia aérea ↗</button></div><h4>Leitura das referências</h4>${getSiteLayout("sede").notes.map(note=>`<p class="muted">${escape(note)}</p>`).join("")}`;
+    $("#resume-site").onclick=()=>visitSite("sede");
+    $("#site-location").onclick=()=>openGeographicSite("sede");
     return;
   }
   const s = data.exploracoes.find((s) => s.id === selected),
     team = teamFor(data, s.id);
   root.innerHTML = `<span class="pill">${MODELLED.includes(s.id) ? "CENÁRIO APROXIMADO DISPONÍVEL" : "SÓ REGISTO · SEM CENÁRIO"}</span><h3>${escape(s.nome)}</h3><div class="detail-metrics"><div><strong>${fmt(s.area_ha)} ha</strong><small>${s.area_e_projetada ? "Área projetada" : "Área declarada"}</small></div><div><strong>${escape(s.culturas_atuais.join(" · ") || "Por confirmar")}</strong><small>Culturas declaradas na recolha</small></div></div>
   ${s.area_e_projetada ? `<p class="notice">Em construção: ${fmt(s.area_quase_concluida_ha)} ha quase concluídos; ${s.niveis_terreno} patamares. A área projetada não representa área em produção.</p>` : ""}
-  ${s.id === "demonstracao" ? '<p class="notice">Referências fotográficas recebidas: entrada branca, vedação verde, painéis de marca e bancada de exposição em madeira. O ponto geográfico foi obtido do link fornecido; este local ainda não integra o percurso jogável.</p>' : ""}
+  ${s.id === "demonstracao" ? '<p class="notice">Referências fotográficas recebidas: entrada branca, vedação verde, painéis de marca e bancada de exposição em madeira. O ponto geográfico foi obtido do link fornecido; a entrada, vedação e bancadas estão representadas no cenário exterior.</p>' : ""}
   <h4>Equipa e apoios</h4><div class="team">${team.map((p) => `<div><span class="person-avatar">${escape(p.name[0])}</span><span><strong>${escape(p.name)}</strong><small>${escape(p.role)}${p.personId.includes("identidade_por_confirmar") ? " · identidade por confirmar" : ""}</small></span></div>`).join("") || '<p class="muted">Responsáveis por confirmar.</p>'}</div>
   ${s.id === "tomates_oeste" ? '<p class="muted">Cristina: supervisão. Emanuel Franco: apoio agronómico.</p>' : ""}
   ${s.observacoes ? `<p class="muted">${escape(s.observacoes)}</p>` : ""}
   <p class="muted">Localização disponível no mapa regional; limites e implantação 3D por validar. ${s.id === "demonstracao" ? "Cerca de 200 variedades; distância de 700 m declarada no pacote original." : ""}</p>
-  <div class="detail-actions"><button id="edit-site" class="primary">Editar informação</button><button id="site-location" class="secondary">Localização e fotografia aérea ↗</button>${MODELLED.includes(s.id) ? '<button id="resume-site" class="secondary">Retomar exploração</button>' : ""}</div>
+  <div class="detail-actions"><button id="edit-site" class="primary">Editar informação</button><button id="site-location" class="secondary">Localização e fotografia aérea ↗</button>${MODELLED.includes(s.id) ? '<button id="resume-site" class="primary">Visitar em 3D →</button>' : ""}</div>
+  <details class="layout-notes"><summary>O que foi aproximado a partir das fotografias</summary>${getSiteLayout(s.id).notes.map(note=>`<p>${escape(note)}</p>`).join("")}</details>
   <h4>Períodos de cultivo</h4><p class="muted">Histórico local, separado das culturas declaradas na recolha. Datas e setores são introduzidos por ti.</p><div class="periods">${s.periodos.map((p) => `<div><strong>${escape(p.cultura)}</strong><span>${escape(p.inicio)} → ${escape(p.fim || "Em curso")} · ${escape(p.setor || "Toda a exploração")}</span></div>`).join("") || '<p class="muted">Sem períodos registados.</p>'}</div>
   <details class="departments"><summary>Equipas transversais · abrangência por confirmar</summary><p>Controlo biológico: Mariana, Lilia. Solaene: Diana. Agropilar: Judite. RH: Andreia. Coordenação: Dulce. Manutenção: Edinaldo. Rega e bombagem: Camacho (carrinha Agropilar).</p><p>${escape(data.equipas_transversais.abrangencia_departamentos)}</p></details>`;
   $("#edit-site").onclick = () => editSite(s.id);
   $("#site-location").onclick = () => openGeographicSite(s.id);
-  if ($("#resume-site")) $("#resume-site").onclick = closePanel;
+  if ($("#resume-site")) $("#resume-site").onclick = () => visitSite(s.id);
 }
 function editSite(id) {
   const s = data.exploracoes.find((x) => x.id === id);
@@ -316,12 +389,13 @@ function openPerson(id) {
     id === PLAYER_PERSON_ID
       ? "A TUA PERSONAGEM · IDENTIDADE ÚNICA"
       : "PESSOA · IDENTIDADE ÚNICA",
-    `<p>${escape(description)}</p>${id === "nuno" ? '<p class="notice">Chefia geral de todas as explorações e das pessoas/equipas referidas.</p>' : ""}<h4>Explorações associadas</h4><div class="person-sites">${sites.map(({ site, roles }) => `<button class="site-row" data-person-site="${site.id}"><span>${escape(site.nome)}</span><small>${escape(roles.join(" · "))}</small></button>`).join("") || '<p class="muted">Apoio transversal ou distribuição por exploração ainda por especificar.</p>'}</div>${supports.length ? `<h4>Outros apoios e locais referidos</h4>${supports.map((r) => `<p class="notice"><strong>${escape(r.location)}</strong><br>${escape(r.description)}<br><small>${r.groupMembership === "externo" ? "Produtores externos ao grupo" : "Enquadramento/lista de explorações por confirmar"}</small></p>`).join("")}` : ""}<div class="detail-actions"><button id="talk-person" class="primary">Conversas simuladas</button><button id="back-team" class="secondary">Ver equipa</button><button id="back-game" class="secondary">Retomar exploração</button></div><p class="muted">Avatares genéricos, sem semelhança física real. As posições no cenário são ilustrativas.</p>`,
+    `<p>${escape(description)}</p>${id === "nuno" ? '<p class="notice">Chefia geral de todas as explorações e das pessoas/equipas referidas.</p>' : ""}<h4>Explorações associadas</h4><div class="person-sites">${sites.map(({ site, roles }) => `<button class="site-row" data-person-site="${site.id}"><span>${escape(site.nome)}</span><small>${escape(roles.join(" · "))}</small></button>`).join("") || '<p class="muted">Apoio transversal ou distribuição por exploração ainda por especificar.</p>'}</div>${supports.length ? `<h4>Outros apoios e locais referidos</h4>${supports.map((r) => `<p class="notice"><strong>${escape(r.location)}</strong><br>${escape(r.description)}<br><small>${r.groupMembership === "externo" ? "Produtores externos ao grupo" : "Enquadramento/lista de explorações por confirmar"}</small></p>`).join("")}` : ""}<div class="detail-actions"><button id="talk-person" class="primary">Conversas simuladas</button><button id="back-team" class="secondary">Ver equipa</button>${state.characters.some(p=>p.id===id)?'<button id="find-person" class="secondary">Ir ter com a personagem →</button>':""}<button id="back-game" class="secondary">Retomar exploração</button></div><p class="muted">Avatares genéricos, sem semelhança física real. As posições no cenário são ilustrativas.</p>`,
     "person",
   );
   document
     .querySelectorAll("[data-person-site]")
     .forEach((b) => (b.onclick = () => openCatalog(b.dataset.personSite)));
+  if ($("#find-person")) $("#find-person").onclick=()=>findPerson(id);
   $("#talk-person").onclick = () => openConversations(id);
   $("#back-team").onclick = openTeam;
   $("#back-game").onclick = closePanel;
@@ -392,9 +466,8 @@ function openDay() {
     ["Explorar uma conversa técnica simulada", dayProgress.conversation],
     ["Conduzir um dos veículos", dayProgress.vehicle],
     [
-      "Visitar Tomates do Oeste e Framboesa Encantada 2",
-      dayProgress.sites.has("tomates_oeste") &&
-        dayProgress.sites.has("framboesa_2"),
+      "Visitar duas explorações diferentes",
+      [...dayProgress.sites].filter(id=>FARM_IDS.includes(id)).length >= 2,
     ],
   ];
   show(
@@ -440,15 +513,11 @@ async function importData(e) {
   }
 }
 function openMap() {
-  show(
-    "O percurso local",
-    "MAPA ESQUEMÁTICO · SEM ESCALA GEOGRÁFICA",
-    `<button id="regional-map-open" class="primary">Mapa geográfico · 14 locais ↗</button><canvas id="large-map" width="850" height="630" aria-label="Mapa geral esquemático das duas explorações"></canvas><div class="map-legend"><span>▲ A tua posição</span><span>□ Veículo simulado</span><span>Verde · Estufas</span></div><p class="notice">Implantação aproximada inspirada nas referências. Distâncias comprimidas para demonstração; não usar para orientação real. O Campo de Demonstração e a sede ainda não integram o percurso.</p><button id="geographic-settings" class="secondary">Localizações e mapa Google 3D</button><details><summary>Mapas reais · estado da integração</summary><p id="map-status">${escape(mapReadiness().reason)} Consulta docs/MAPAS.md.</p></details>`,
-    "map",
-  );
-  drawMap($("#large-map"), state, true);
-  $("#regional-map-open").onclick = openGeography;
-  $("#geographic-settings").onclick = openGeography;
+  const layout=getSiteLayout(state.siteId);
+  show(layout.name, "PLANTA LOCAL · DIMENSÕES ESTIMADAS", `<button id="regional-map-open" class="primary">Mapa geográfico · 14 locais ↗</button><canvas id="large-map" width="850" height="630" aria-label="Planta aproximada da exploração atual"></canvas><div class="map-legend"><span>▲ A tua posição</span><span>□ Veículos</span><span>Verde · Estufas</span><span>Azul · Reservatórios</span></div><p class="notice">Planta interpretada da fotografia fornecida. Escala e orientação estimadas, sem levantamento dos limites. O parque a sul é um anexo virtual para experimentar os oito veículos.</p><button id="geographic-settings" class="secondary">Localizações e mapa Google 3D</button><details><summary>Referência e implantação</summary>${layout.notes.map(note=>`<p>${escape(note)}</p>`).join("")}<p id="map-status">${escape(mapReadiness().reason)}</p></details>`, "map");
+  drawMap($("#large-map"),state,true);
+  $("#regional-map-open").onclick=openGeography;
+  $("#geographic-settings").onclick=openGeography;
 }
 const googleConfig = {
   enabled: import.meta.env.VITE_ENABLE_GOOGLE_MAPS === "true",
@@ -483,7 +552,8 @@ function openGeography() {
 function openGeographicSite(id) {
   const site = id === "sede" ? data.sede : data.exploracoes.find(s => s.id === id);
   const image = referenceImage(site);
-  show(site.nome, "LOCALIZAÇÃO · REFERÊNCIA FORNECIDA", `<p>${site.coordenadas ? `${site.coordenadas.lat}, ${site.coordenadas.lng}` : "Sem coordenadas"}</p>${site.maps_url ? `<a class="primary map-source-link" href="${escape(site.maps_url)}" target="_blank" rel="noopener noreferrer">Abrir o ponto no Google Maps ↗</a>` : ""}${image ? `<figure class="aerial-reference"><img src="${image}" alt="Referência aérea fornecida de ${escape(site.nome)}"><figcaption>Imagem original fornecida · mantém as anotações e a atribuição da fonte. Não foi usada como textura do terreno.</figcaption></figure>` : ""}<p class="notice">A localização do ponto vem do link fornecido. Os limites desenhados na imagem são uma referência visual; não constituem um levantamento georreferenciado.</p><div class="detail-actions"><button id="back-regional" class="secondary">← Voltar ao mapa</button><button id="edit-point" class="secondary">Editar coordenadas</button></div>`, "geo-site");
+  show(site.nome, "LOCALIZAÇÃO · REFERÊNCIA FORNECIDA", `<p>${site.coordenadas ? `${site.coordenadas.lat}, ${site.coordenadas.lng}` : "Sem coordenadas"}</p>${site.maps_url ? `<a class="primary map-source-link" href="${escape(site.maps_url)}" target="_blank" rel="noopener noreferrer">Abrir o ponto no Google Maps ↗</a>` : ""}${image ? `<figure class="aerial-reference"><img src="${image}" alt="Referência aérea fornecida de ${escape(site.nome)}"><figcaption>Imagem original fornecida · mantém as anotações e a atribuição da fonte. Não foi usada como textura do terreno.</figcaption></figure>` : ""}<p class="notice">A localização do ponto vem do link fornecido. Os limites desenhados na imagem são uma referência visual; não constituem um levantamento georreferenciado.</p><div class="detail-actions"><button id="visit-geographic" class="primary">Visitar em 3D →</button><button id="back-regional" class="secondary">← Voltar ao mapa</button><button id="edit-point" class="secondary">Editar coordenadas</button></div>`, "geo-site");
+  $("#visit-geographic").onclick = () => visitSite(id);
   $("#back-regional").onclick = openGeography;
   $("#edit-point").onclick = () => editCoordinates(id);
 }
@@ -550,7 +620,7 @@ function help(pause = false) {
   show(
     pause ? "Exploração em pausa" : "Como explorar",
     "TECLADO E RATO",
-    `<div class="help-grid"><div><kbd>W A S D</kbd><span>Andar · conduzir (W acelera, S trava/recua)</span></div><div><kbd>Shift</kbd><span>Correr a pé</span></div><div><kbd>Rato</kbd><span>Arrastar: rodar câmara · roda: aproximar</span></div><div><kbd>E</kbd><span>Entrar / sair do carro perto dele; pára para sair</span></div><div><kbd>Espaço</kbd><span>Travão do veículo</span></div><div><kbd>F / T / C</kbd><span>Consultar personagem / equipa / conversas</span></div><div><kbd>M / I</kbd><span>Mapa / informação da exploração</span></div><div><kbd>R</kbd><span>Reiniciar personagem e veículo numa posição livre</span></div><div><kbd>Esc</kbd><span>Pausar / retomar</span></div></div><div class="settings"><label>Qualidade gráfica<select id="quality"><option value="low">Baixa · sem sombras</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><p>O contador apresenta o desempenho real deste navegador. As imagens do pacote são referências de intenção, não o resultado deste protótipo.</p></div><p class="notice">Quatro veículos conduzíveis: carro técnico, Agropilar, controlo biológico e técnico agrícola. Camião decorado estacionado. Modelos aproximados a partir das referências; movimentos simulados. Pessoas sem semelhança real. Cenário exterior com estufas fechadas e colisões básicas. Culturas em 3D dentro de estufas translúcidas, sem atribuição de setores reais. Os 14 pontos geográficos provêm dos links fornecidos; a implantação do cenário jogável continua aproximada.</p><button id="resume" class="primary">${started ? "Retomar exploração" : "Fechar instruções"} →</button>`,
+    `<div class="help-grid"><div><kbd>W A S D</kbd><span>Andar · conduzir (W acelera, S trava/recua)</span></div><div><kbd>Shift</kbd><span>Correr a pé</span></div><div><kbd>Rato</kbd><span>Arrastar: rodar câmara · roda: aproximar</span></div><div><kbd>E</kbd><span>Entrar / sair do carro perto dele; pára para sair</span></div><div><kbd>Espaço</kbd><span>Travão do veículo</span></div><div><kbd>F / T / C</kbd><span>Consultar personagem / equipa / conversas</span></div><div><kbd>B / V</kbd><span>Vista aérea / veículos e equipamentos</span></div><div><kbd>M / I</kbd><span>Mapa / informação da exploração</span></div><div><kbd>R</kbd><span>Reiniciar a posição nesta exploração</span></div><div><kbd>Esc</kbd><span>Pausar / retomar</span></div></div><div class="settings"><label>Qualidade gráfica<select id="quality"><option value="low">Baixa · sem sombras</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><p>O contador apresenta o desempenho real deste navegador. As imagens do pacote são referências de intenção, não o resultado deste protótipo.</p></div><p class="notice">Oito veículos conduzíveis: carro técnico, três carrinhas, camião articulado, camião de distribuição, trator agrícola e trator compacto. Modelos aproximados a partir das referências; movimentos simulados. Pessoas sem semelhança real. Cenário exterior com estufas fechadas e colisões básicas. Culturas em 3D dentro de estufas translúcidas, sem atribuição de setores reais. Os 14 pontos geográficos provêm dos links fornecidos; a implantação do cenário jogável continua aproximada.</p><button id="resume" class="primary">${started ? "Retomar exploração" : "Fechar instruções"} →</button>`,
     "help",
   );
   $("#quality").value = quality;
@@ -565,17 +635,20 @@ world?.quality(quality);
 if ($("#start"))
   $("#start").onclick = () => {
     if (!world) return;
-    state.player.x = 92; state.player.z = 27;
-    state.car.x = 104; state.car.z = 30; state.car.yaw = Math.PI / 2;
+    placeAtFarmEntrance();
     world.resetCamera();
     started = true;
     document.body.classList.add("started");
     $("#welcome").hidden = true;
     $("#scene").focus();
     if (warning) toast(warning);
-    else toast("Bem-vindo. Estás junto às estufas. O carro técnico está à direita; usa E para entrar. R regressa ao parque.");
+    else toast("Bem-vindo. Usa Explorações para viajar e Veículos para experimentar camiões e tratores. E entra no veículo próximo.");
   };
 $("#open-catalog").onclick = () => openCatalog();
+$("#open-fleet").onclick = openFleet;
+$("#change-site").onclick = () => openCatalog();
+$("#aerial-toggle").onclick = toggleAerial;
+$("#go-to-greenhouses").onclick = goToGreenhouses;
 $("#open-team").onclick = () => openTeam();
 $("#open-talk").onclick = () => openConversations();
 $("#open-day").onclick = openDay;
@@ -593,7 +666,11 @@ $(".brand").onclick = (e) => {
   if (panel.open) closePanel();
 };
 function reset() {
-  state = createState();
+  const previousLocations=state.locations;
+  state = createState(state.siteId);
+  state.locations=previousLocations;
+  aerialMode=false;
+  $("#aerial-toggle").textContent="Vista aérea · B";
   cameraYaw = 0;
   world?.resetCamera();
   input = {};
@@ -628,12 +705,16 @@ addEventListener("keydown", (e) => {
       "i",
       "r",
       "escape",
+      "b",
+      "v",
     ].includes(k)
   )
     e.preventDefault();
-  if (e.repeat && ["e", "f", "t", "c", "m", "i", "r", "escape"].includes(k))
+  if (e.repeat && ["e", "f", "t", "c", "m", "i", "r", "b", "v", "escape"].includes(k))
     return;
-  if (k === "e") toast(toggleVehicle(state));
+  if (k === "b") toggleAerial();
+  if (k === "v") openFleet();
+  if (k === "e" && !aerialMode) toast(toggleVehicle(state));
   if (k === "f") {
     const c = nearbyCharacter(state);
     if (c) openPerson(c.id);
@@ -657,7 +738,7 @@ addEventListener("keydown", (e) => {
     shift: "run",
     " ": "brake",
   }[k];
-  if (action) input[action] = true;
+  if (action && !aerialMode) input[action] = true;
 });
 addEventListener("keyup", (e) => {
   const action = {
@@ -695,14 +776,14 @@ function animate(now) {
     dt = Math.min(raw, 0.05);
   previous = now;
   let movement = 0;
-  if (started && !paused) {
+  if (started && !paused && !aerialMode) {
     accumulator += Math.min(raw, 0.5);
     while (accumulator >= 1 / 60) {
       movement += step(state, input, 1 / 60, cameraYaw);
       accumulator -= 1 / 60;
     }
   } else accumulator = 0;
-  if (world && !paused) cameraYaw = world.render(state, dt, movement, !started);
+  if (world && !paused) cameraYaw = world.render(state, dt, movement, !started || aerialMode);
   if (!paused) {
     elapsed += raw;
     frames++;
@@ -721,21 +802,19 @@ function animate(now) {
     dayProgress.team,
     dayProgress.conversation,
     dayProgress.vehicle,
-    dayProgress.sites.has("tomates_oeste") &&
-      dayProgress.sites.has("framboesa_2"),
+    [...dayProgress.sites].filter(id=>FARM_IDS.includes(id)).length >= 2,
   ].filter(Boolean).length;
   $("#day-count").textContent = `${completed}/4`;
   if (site !== lastSite) {
     lastSite = site;
-    const s = data.exploracoes.find((s) => s.id === site);
+    const s = site === "sede" ? data.sede : data.exploracoes.find((s) => s.id === site);
     $("#location-name").textContent = s?.nome || "Caminhos da exploração";
     $("#location-detail").textContent = s
-      ? `${fmt(s.area_ha)} ha · ${s.culturas_atuais.join(" e ")}`
+      ? site === "sede" ? "Receção · embalamento · expedição" : `${fmt(s.area_ha)} ha · ${s.culturas_atuais.join(" e ")}`
       : "Tomates do Oeste & Framboesa Encantada 2";
   }
-  const near = [state.car, ...state.parkedCars].some(
-    (v) => Math.hypot(state.player.x - v.x, state.player.z - v.z) < 15,
-  );
+  const nearest = nearestVehicle(state);
+  const near = nearest && nearest.distance <= VEHICLE_SPECS[nearest.vehicle.kind].entryDistance;
   const character = nearbyCharacter(state);
   $("#interaction").hidden =
     !started || (!state.driving && !near && !character);
@@ -746,12 +825,12 @@ function animate(now) {
       : "Sair do veículo"
     : character
       ? `Consultar ${character.name}`
-      : "Entrar no veículo";
+      : near ? `Entrar · ${VEHICLE_NAMES[nearest.vehicle.kind]}` : "Entrar no veículo";
   $("#mode").textContent = state.driving
     ? VEHICLE_NAMES[state.car.kind]
     : "A pé · Emanuel Franco";
   $("#speed").textContent = state.driving
-    ? `${Math.round((Math.abs(state.car.speed) / 27) * 100)}% · velocidade simulada`
+    ? `${Math.round(Math.abs(state.car.speed) * 3.6)} km/h · simulação`
     : movement
       ? "A explorar"
       : "Pronto a explorar";
@@ -766,6 +845,13 @@ function animate(now) {
     paused: String(paused),
     cameraYaw: cameraYaw.toFixed(3),
     site: site || "caminhos",
+    sceneSite: state.siteId,
+    speed: state.car.speed.toFixed(3),
+    trailerYaw: String(state.car.trailerYaw ?? state.car.yaw),
+    vehicleYaw: String(state.car.yaw),
+    vehicleCount: String(1+state.parkedCars.length),
+    aerial: String(aerialMode),
+    blockCount: String(getSiteLayout(state.siteId).blocks.length),
   });
   if (elapsed > 0.75) {
     $("#fps").textContent =

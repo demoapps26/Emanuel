@@ -1,30 +1,32 @@
-# Validação — versão 0.3
+# Validação — versão 0.4
 
-Validado em 23/10/2026 (Lisboa), Node 24.19.0, npm 11.9.0 e Chromium 154, com SwiftShader por software. A versão 0.2 está documentada separadamente em `VALIDACAO_v0.2.md`.
+Validado em 23/10/2026, com Node 24.19.0, npm 11.9.0 e Chromium 154. O navegador da nuvem usa SwiftShader por software, sem GPU física. Os registos anteriores estão em `VALIDACAO_v0.3.md` e `VALIDACAO_v0.2.md`.
 
-## Resultados
+## Verificações
 
-- `npm test`: 39 testes aprovados, sem falhas ou skips. Incluem dados, pessoas únicas, simulação/colisões, quatro veículos, conversas, pontos dos links e projeção métrica regional.
-- `npm run standalone`: compilação aprovada; HTML autónomo com 6 414 189 bytes, incluindo as referências aéreas fornecidas. O aviso de bundle grande corresponde sobretudo às imagens incorporadas; não é erro de compilação.
-- A entrega foi comparada byte a byte com `release/Patricia_Pilar_Mundo_3D.html`, e o corpo servido por HTTP é idêntico.
-- `TEST_BASE_URL=http://127.0.0.1:8090/Patricia_Pilar_Mundo_3D.html npm run test:browser`: 24 verificações aprovadas, saída 0, zero erros JavaScript e zero pedidos à API Google.
-- Verificação SHA-256: os 21 ficheiros do ZIP original continuam intactos.
-- Os 14 pontos KML foram verificados na ordem longitude, latitude. São os pontos dos links do utilizador, não limites de propriedades.
+- `npm test`: **61 testes aprovados**, sem falhas ou skips. Incluem as 14 implantações, oito tipos de veículo, 112 combinações de local e veículo para aproximação/entrada/saída, colisões orientadas, articulação e marcha-atrás, patamares elevados, identidades únicas, conversas e dados existentes.
+- `npm run standalone`: compilação aprovada. O jogo completo tem **6 454 528 bytes** e o mesmo SHA-256 em `JOGAR.html`, `docs/index.html` e `release/Patricia_Pilar_Mundo_3D.html`: `9267e68d03c6b5da475dde590c9bfb1706fce0b5161f8cfd17fa9327a11b0bc8`.
+- A compilação avisa do tamanho do bundle, que inclui as 14 imagens aéreas fornecidas. É intencional para a distribuição num único ficheiro.
+- O teste completo de navegador cobre **44 verificações**, incluindo arranque WebGL, teclado e rato, condução/travagem/marcha-atrás/saída dos oito veículos, articulação do semirreboque, visita às 14 cenas, conservação da frota ao regressar e vista aérea com movimento suspenso.
+- A mesma bateria cobre perfis, pessoa próxima, conversas/variantes, objetivos, pausa, mapas, carregamento das 14 imagens, edição e persistência, importação/exportação, mudança de qualidade e janela pequena. Verifica ausência de erros JavaScript e de pedidos à API Google.
+- Além da compilação servida pelo Vite, a bateria foi executada contra o **HTML autónomo real** em `http://127.0.0.1:8090/JOGAR.html`. A verificação de arranque exige zero `script[src]`, nenhum redirecionamento e um módulo incorporado.
+- Um ensaio separado desliga a rede do navegador depois do arranque, visita Nutriveg 2, Deusas, Lagoa e Campo de Demonstração, alterna a vista aérea e entra no camião. As capturas são imagens do jogo, não imagens de conceito.
+- SHA-256 dos **21 ficheiros originais** comparado com o ZIP fornecido: todos preservados.
 
-O navegador exercitou arranque, movimento real por teclado, reinício, rotação por rato, entrada/condução/travagem/saída dos quatro veículos, consulta de personagens por aproximação e por perfil, identidade única, conversas e variantes, objetivos da sessão, pausa, mapa local, mapa regional com 13 pontos no Oeste/14 incluindo Lagoa, imagem aérea, edição de coordenadas, Google desativado, catálogo, edições/históricos, persistência após recarregar, importação/exportação, qualidade gráfica e janela pequena. Os testes usam perfil temporário; as coordenadas e áreas de teste não alteram a fonte.
+O último ajuste gráfico aumenta o plano próximo da câmara apenas na vista aérea para reduzir o tremeluzir das superfícies coplanares à distância. O ensaio de capturas e funcionamento sem rede verifica também esse ajuste; não altera a simulação ou os dados.
 
-Os testes foram ajustados para manter a aceleração durante a tentativa de sair do carro em movimento, alinhar a personagem a passo com carrinhas próximas e distinguir os botões do catálogo dos atributos de diagnóstico do HUD. Isso evita depender de fricção, overshoot ou seletores ambíguos em renderização por software.
+## Alcance visual e geográfico
 
-## Gráficos e limites
+Foram inspeccionadas capturas de arranque, camião, Nutriveg 2, Lagoa, Deusas e Campo de Demonstração. Cada implantação tem blocos e orientação próprios, baseados na respetiva referência. As 11 pequenas estufas de madeira da Nutriveg 2 e os três patamares de construção das Deusas têm verificações específicas. Culturas, estruturas, carroçarias e pessoas são procedurais e continuam estilizadas. **O resultado ainda não iguala o realismo da imagem de conceito.**
 
-Capturas reais foram inspeccionadas durante a revisão: estufas translúcidas, tubos metálicos, plantas/frutos geométricos, sombras, carroçaria e vegetação. A qualidade alta ficou muito lenta em SwiftShader. O teste completo terminou em qualidade baixa com **4 FPS e 234,8 ms/frame**; a janela curta do FPS e a média de frames diferem. Isso não é um benchmark de GPU. Não se afirma 60 FPS, compatibilidade universal ou desempenho validado em GPU física.
+Os 14 pontos regionais vêm dos links fornecidos. Polígonos, acessos, alturas, dimensões e escala das malhas são estimados a partir das imagens; não constituem um levantamento. O parque de manobra é um anexo virtual identificado como tal. As mudanças entre explorações são viagens rápidas, sem estradas contínuas modeladas entre os locais.
 
-O modo baixo reduz instâncias de culturas e resolução, simplifica materiais e desliga sombras/reflexos. O alto restaura materiais, densidade e iluminação. O cenário continua estilizado e ainda não reproduz o realismo da referência de conceito. A implantação jogável é aproximada, distinta dos 14 pontos geográficos reais. Não foram levantados polígonos, acessos, altitudes ou dimensões das estufas. A comparação visual inclui uma nova posição inicial mais próxima das fachadas; não é uma comparação controlada com câmara idêntica.
+A qualidade baixa é selecionada automaticamente no renderizador por software. Reduz resolução, materiais, culturas e sombras. No final da bateria do HTML autónomo foram medidos **8 FPS e 170,0 ms/frame**; as duas métricas usam janelas diferentes. As medições dessa máquina não representam uma placa gráfica de computador; não se garantem 60 FPS ou desempenho em GPU física. Os modos médio e alto estão disponíveis no painel de ajuda.
 
-## Abertura e distribuição
+## Entrega e abertura
 
-A política do Chromium da nuvem bloqueia `file://`; não foi alterada. Foi validado o mesmo HTML por HTTP. A abertura direta no computador do utilizador depende do navegador, políticas locais e aceleração WebGL2. O HTML inclui código, CSS e dados; as imagens aéreas estão incorporadas. Os links externos exigem Internet, o jogo local não pede chave API.
+**JOGAR.html contém agora o jogo completo**, sem depender de `docs/index.html` ou de ficheiros adjacentes. Corrige a dependência do antigo atalho que falhava quando o Windows o abria a partir de uma pasta temporária do ZIP. O ZIP dedicado em `downloads/` inclui o jogo, instruções e KML; não inclui a entrada HTML de desenvolvimento.
 
-Na interface de chat, o link HTML pode abrir uma pré-visualização de código em vez de transferir/executar o ficheiro. Um caminho de ficheiro no ambiente não deve ser anunciado como URL pública. O utilizador reportou falha dos links ZIP e uma vista de código HTML. Foram dadas instruções para guardar o ficheiro original com extensão `.html` e abri-lo no Chrome/Edge; o download/abertura no computador do utilizador ainda não foi confirmado.
+A política administrativa do Chromium da nuvem bloqueia `file://` e foi mantida. Validou-se o mesmo conteúdo por HTTP e com a rede desligada após carregar. Isto não confirma a abertura direta no computador do utilizador, que depende do navegador, WebGL2 e políticas locais. A recomendação é **Extrair tudo → abrir JOGAR.html no Chrome ou Edge**.
 
-O GitHub API devolveu `Forbidden` nesta rede ao verificar uma alternativa de publicação. Não foi publicada aplicação, criado serviço público, feito push ou ativado GitHub Pages. A API Google e faturação continuam desligadas. O rascunho das instruções do ambiente foi guardado; aplicar/publicar esse rascunho e restaurar noutra sessão não foram verificados.
+A atualização é entregue no mesmo repositório GitHub. Não foi ativado GitHub Pages nem um novo serviço público. Não foram ativadas chave Google, API paga ou faturação. Os links Maps continuam a ser ligações externas opcionais.

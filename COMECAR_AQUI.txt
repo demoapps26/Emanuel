@@ -1,22 +1,44 @@
-PATRÍCIA PILAR · MUNDO 3D · 0.3
+PATRÍCIA PILAR · MUNDO 3D · 0.4
 
-1. No GitHub, escolhe Code → Download ZIP.
-2. No Windows, clica com o botão direito no ZIP e escolhe Extrair tudo.
+COMO ABRIR NO WINDOWS
+1. Transfere o ZIP do jogo pelo link no README do GitHub.
+   Alternativa com todo o projeto: Code → Download ZIP no repositório.
+2. Nas Transferências, clica com o botão direito no ZIP → Extrair tudo.
 3. Na pasta extraída, abre JOGAR.html no Chrome ou Edge.
 4. Carrega em Começar a explorar.
 
-O jogo completo está incluído em docs/index.html. JOGAR.html abre esse ficheiro.
-Não abras o index.html da raiz, que pertence ao código de desenvolvimento.
-Não é necessário instalar Node ou configurar uma chave API para experimentar.
+JOGAR.html contém agora o jogo completo. Não é um atalho para docs/index.html
+nem precisa de ficheiros ao lado. Podes copiá-lo sozinho para outra pasta.
+Não abras o index.html da raiz, que é a entrada do código de desenvolvimento.
+Não precisas de instalar Node ou configurar uma chave API para experimentar.
+Requer WebGL2; recomenda-se aceleração gráfica.
 
-W/A/S/D move; Shift corre; arrastar o rato roda a câmara; E entra/sai do veículo;
-Espaço trava; F consulta uma pessoa próxima; C abre conversas simuladas;
-R regressa ao parque; Esc pausa. O botão Mapa mostra os 14 locais fornecidos.
+VISITAR AS EXPLORAÇÕES
+Abre Explorações, escolhe um local e carrega em Visitar em 3D. Há cenários para
+as 13 explorações e para a sede. Também podes visitar a partir de um ponto do
+Mapa. As viagens entre locais são rápidas; não há estradas contínuas entre eles.
+R reinicia a personagem e os veículos do local atual no parque.
+Ir às estufas regressa à zona das fachadas.
+B alterna a vista aérea da implantação e suspende o movimento enquanto a observas.
 
-Em ? podes alterar a qualidade gráfica. Os modelos ainda são aproximados e não
-igualam o realismo da imagem de conceito. A implantação do percurso jogável é
-provisória, separada dos pontos geográficos do mapa regional.
+CONDUZIR
+V ou Veículos abre os oito tipos: carro técnico, três carrinhas, dois camiões
+e dois tratores. Escolhe um veículo para te aproximares da cabine e usa E.
+W acelera; S trava e recua; A/D vira; Espaço trava; pára antes de sair com E.
+O semirreboque articula nas curvas e em marcha-atrás. A condução é simplificada.
 
-Se não abrir automaticamente, abre docs/index.html diretamente no Chrome/Edge.
-Requer WebGL2; recomenda-se aceleração gráfica. Exporta os dados para conservar
-as tuas alterações, porque o armazenamento de ficheiros locais varia por navegador.
+A PÉ E NOS PAINÉIS
+W/A/S/D move; Shift corre; arrastar o rato roda a câmara; roda aproxima/afasta;
+F consulta a pessoa próxima; T abre a equipa; C abre conversas simuladas;
+M mostra o mapa local; I consulta a exploração; Esc pausa.
+Em ? podes alterar a qualidade gráfica. Exporta os dados para conservar edições.
+
+As plantas 3D aproximam as fotografias, mas as dimensões, limites e alturas são
+estimados. O parque é um anexo virtual para experimentar os veículos. Os pontos
+do mapa regional vêm dos links fornecidos; não validam os limites das estufas.
+Os gráficos ainda não igualam o realismo das imagens de conceito. As conversas
+são fictícias e não criam tarefas reais. Não há ligação a serviços pagos.
+
+A abertura por ficheiro local depende das políticas do teu navegador. A nuvem
+bloqueia file:// por política; o mesmo HTML é validado por HTTP. Se o navegador
+bloquear o HTML, o README explica a execução por servidor para desenvolvimento.
