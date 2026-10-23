@@ -1,4 +1,20 @@
-# Patrícia Pilar · Mapa e visita em 3D
+# Patrícia Pilar · Programas das estufas
+
+## Novo programa · Sacos de substrato
+
+**[Transferir Gestão de Sacos — ZIP](https://github.com/demoapps26/Emanuel/raw/refs/heads/main/downloads/Gestao_Sacos_Patricia_Pilar_v1.0.zip)**. Escolhe **Extrair tudo** e abre **SACOS.html**.
+
+A estufa é construída durante a primeira contagem: cria a estufa, escolhe ou cria um setor, conta os sacos de uma linha ou de cada zona e usa **Guardar e próxima linha**. O programa cria a linha e as zonas com os dados introduzidos, sugere o próximo número e conserva a data, substrato, fornecedor e nomes de zonas para facilitar a continuação. As quantidades começam sempre vazias na linha seguinte.
+
+Inclui edição de registos, totais por estufa/setor/linha/zona, configuração de linhas sem contagens, exportação para Excel em CSV e cópias JSON para recuperar toda a estrutura. Começa vazio; a demonstração opcional usa dados fictícios identificados.
+
+Funciona sem Internet. **Os dados ficam no navegador; exporta uma cópia no fim de cada sessão.** Não há sincronização entre equipamentos. Os totais representam introduções acumuladas, não stock ou consumo.
+
+![Captura real do programa de sacos com dados de teste](docs/sacos_desktop_v1.0.png)
+
+Instruções, desenvolvimento e validação em [docs/SACOS.md](docs/SACOS.md).
+
+## Mapa e visita em 3D
 
 Explora as **13 explorações e a sede** com uma personagem em terceira pessoa e alterna para o mapa geográfico. A apresentação inclui a ficha do local, ponto de consulta no cenário, minimapa e fotografias aéreas originais. As localizações do mapa vêm dos links Maps fornecidos.
 

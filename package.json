@@ -15,7 +15,11 @@
     "map:build": "vite build --config vite.map.config.mjs && node scripts/build-map.mjs",
     "map:package": "npm run map:build && python3 scripts/package-map.py",
     "test:map:browser": "node tests/map-browser.mjs",
-    "test:explore:browser": "node tests/explore-browser.mjs"
+    "test:explore:browser": "node tests/explore-browser.mjs",
+    "sacos:dev": "vite --host 0.0.0.0 --port 5175",
+    "sacos:build": "vite build --config vite.sacos.config.mjs && node scripts/build-sacos.mjs",
+    "sacos:package": "npm run sacos:build && python3 scripts/package-sacos.py",
+    "test:sacos:browser": "node tests/sacos-browser.mjs"
   },
   "dependencies": {
     "leaflet": "1.9.4",

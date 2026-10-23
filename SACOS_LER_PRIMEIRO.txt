@@ -1,0 +1,39 @@
+GRUPO PATRÍCIA PILAR — GESTÃO DE SACOS DE SUBSTRATO v1.0
+
+COMO ABRIR
+1. Descarrega o ZIP para o computador.
+2. Clica com o botão direito no ZIP e escolhe Extrair tudo.
+3. Abre SACOS.html na pasta extraída, no Chrome ou Edge.
+Não abras o ficheiro dentro do ZIP. Não precisas de Internet ou de instalar programas.
+
+PRIMEIRA UTILIZAÇÃO: A ESTUFA É CONSTRUÍDA ENQUANTO CONTAS
+1. Clica em Criar estufa e começar. Dá um nome à estufa e indica a exploração.
+2. Abre-se Contar nova linha. Escolhe um setor ou cria um novo.
+3. Indica o nome da linha e a data. Os nomes das linhas são sugeridos automaticamente.
+4. Conta o total da linha ou escolhe Zona a zona e adiciona as zonas que precisares.
+5. Indica os sacos contados e, se quiseres, o substrato e o fornecedor.
+6. Clica em Guardar e próxima linha. O setor, a linha e as zonas são criados com a contagem.
+7. Quando terminares, fecha a janela, ou desmarca Continuar para a próxima linha antes de guardar.
+8. Muda de setor quando necessário. Usa Contar nova linha para retomar.
+As zonas com zero sacos são criadas sem registo de introdução. Para guardar a linha pela contagem, deve existir pelo menos um saco no total.
+
+CONFIGURAR E CORRIGIR
+Podes preparar linhas sem contagens em Configurar linhas.
+Clica numa linha para consultar zonas, registos e totais.
+Usa Introduzir sacos para ADICIONAR uma introdução a uma linha existente.
+Para CORRIGIR uma contagem existente, clica no respetivo registo e edita-o.
+Os totais somam as introduções: não calculam stock, saída ou consumo de sacos.
+Podes editar os nomes das estufas, setores, linhas e zonas.
+Ao eliminar uma zona, os seus registos passam para Sem zona atribuída na mesma linha.
+Ao eliminar uma linha, setor ou estufa, os respetivos registos são eliminados após confirmação.
+O desenho mostra a organização dos setores e linhas: não é uma planta geográfica à escala.
+Experimentar exemplo cria dados fictícios, numa estufa de demonstração identificada.
+
+GUARDAR E FAZER CÓPIAS
+Os dados são guardados neste navegador/computador. Não há sincronização entre equipamentos nem contas de utilizador.
+Conserva SACOS.html na mesma pasta e usa o mesmo navegador. A gravação de ficheiros locais depende das definições do navegador.
+EXPORTAR CÓPIA guarda TODA a estrutura e todos os registos num ficheiro JSON.
+Faz uma cópia no fim de cada sessão e antes de mudar o ficheiro de pasta, trocar de navegador, limpar os dados ou atualizar o programa.
+RESTAURAR permite recuperar a cópia ou levá-la para outro computador. Substitui os dados atuais após confirmação; não junta duas cópias.
+EXPORTAR REGISTOS · CSV exporta os registos para consultar no Excel (separador ponto e vírgula). Para voltar a usar no programa, utiliza a cópia JSON.
+Se o navegador não permitir guardar, aparece um aviso; nesse caso exporta a cópia antes de fechar.
