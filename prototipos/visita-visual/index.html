@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#183e32">
+  <title>Tomates do Oeste · Explorar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="experience" aria-label="Visita virtual à exploração Tomates do Oeste">
+    <div class="landscape" id="landscape"></div>
+    <div class="shade"></div>
+    <header>
+      <a class="brand" href="./" aria-label="Patrícia Pilar, início"><svg viewBox="0 0 36 36" fill="none"><path d="M18 31V13M18 24C5 23 5 9 7 5c10 0 14 10 11 19ZM19 19c0-8 4-13 11-14 2 8-3 15-11 17" stroke="currentColor" stroke-width="1.8"/></svg><span>patrícia pilar<small>DA TERRA, COM FUTURO.</small></span></a>
+      <nav aria-label="Navegação"><button class="glass" id="explorations">Explorações <span>⊞</span></button><span class="nav-divider"></span><button class="glass sound-button" id="sound" aria-label="Ativar som ambiente" title="Som ambiente"><span id="sound-icon">♫</span><span id="sound-label">Som desligado</span></button><button class="glass" id="about">Sobre a visita <span>↗</span></button></nav>
+    </header>
+    <section class="location glass">
+      <span class="location-icon">⌖</span><div><div class="eyebrow">EXPLORAÇÃO 01 / OESTE</div><h1>Tomates do Oeste</h1><p>Oeste, Portugal <span>·</span> 16 ha na referência</p></div><span class="live-dot" title="Exploração selecionada"></span>
+    </section>
+    <div class="concept"><span class="leaf">♧</span> Conceito visual <span class="concept-dot"></span></div>
+    <button class="hotspot greenhouse" data-panel="farm"><span class="hotspot-icon">⌁</span><span>Conhecer a exploração <b>↗</b></span></button>
+    <button class="hotspot vehicle" data-panel="vehicle"><span class="key">E</span><span>Entrar no veículo <b>→</b></span></button>
+    <div class="scene-caption"><span>UMA NOVA PERSPETIVA</span><h2>É aqui que<br>tudo começa.</h2><p>Explore a origem. Conheça quem cultiva.</p></div>
+    <aside class="minimap glass" id="minimap" aria-label="Mapa da exploração">
+      <div class="map-art"><div class="field field-one"></div><div class="field field-two"></div><div class="field field-three"></div><div class="map-road"></div><div class="map-label"><span>⌖</span> Tomates do Oeste</div><div class="map-player" id="map-player"></div><span class="north">N<br>↑</span></div>
+      <button class="map-footer" id="map-toggle"><span><span class="map-symbol">⊞</span> Explorar mapa</span><span>↗</span></button>
+    </aside>
+    <footer><div class="status"><span class="live-dot"></span> AO RITMO DA NATUREZA <span class="status-line"></span><span>LOCALIZAÇÃO POR CONFIRMAR</span></div><div class="controls glass"><span><kbd>W</kbd><span class="key-cluster"><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> Mover</span><i></i><span><span class="mouse-icon"></span> Arrastar para olhar</span><i></i><span><kbd>M</kbd> Mapa</span><i></i><button id="help" aria-label="Ajuda dos controlos">?</button></div><button class="share glass" id="share" aria-label="Partilhar visita">↥</button></footer>
+    <div class="zoom-controls glass"><button id="zoom-in" aria-label="Aproximar">+</button><span></span><button id="zoom-out" aria-label="Afastar">−</button></div>
+    <div class="toast" id="toast" role="status"></div>
+    <section class="explorations-view" id="explorations-view" aria-label="Explorações e mapa regional" hidden>
+      <div class="explorations-sidebar">
+        <button class="back-to-visit" id="back-to-visit">← <span>Voltar à visita</span></button>
+        <div class="eyebrow">DA TERRA, COM FUTURO</div>
+        <h2>Uma terra.<br>Muitas origens.</h2>
+        <p class="overview-intro">Conheça as explorações e descubra onde começa cada história.</p>
+        <div class="list-heading"><span>EXPLORAÇÕES</span><span>01 referência</span></div>
+        <button class="farm-card" id="select-farm"><img src="assets/farm.png" alt="Visualização ilustrativa das estufas"><span class="farm-card-body"><span class="farm-card-top"><span>01 · OESTE</span><span>↗</span></span><strong>Tomates do Oeste</strong><span class="farm-card-description">Tomate e pepino <span>·</span> 16 ha na referência</span><span class="pending-location"><span></span> Localização exata por confirmar</span></span></button>
+        <div class="map-note"><span>⌖</span><p>O mapa mostra a região do Oeste. Os limites e os pontos das explorações serão adicionados a partir das localizações reais.</p></div>
+        <button class="open-visit" id="open-visit">Explorar esta referência <span>→</span></button>
+      </div>
+      <div class="regional-map"><iframe id="regional-map-frame" title="Mapa OpenStreetMap da região do Oeste, sem limites de explorações confirmados" data-src="https://www.openstreetmap.org/export/embed.html?bbox=-9.62%2C38.88%2C-8.83%2C39.5&amp;layer=mapnik" loading="lazy"></iframe><div class="map-heading"><span class="eyebrow">PORTUGAL</span><strong>Região do Oeste</strong><span>Enquadramento regional · sem parcelas confirmadas</span></div><a class="external-map" href="https://www.openstreetmap.org/#map=10/39.19/-9.22" target="_blank" rel="noopener noreferrer">Abrir mapa completo ↗</a><div class="map-unavailable">Mapa regional fornecido pelo OpenStreetMap.<br>Requer ligação à Internet.</div></div>
+    </section>
+    <dialog id="panel"><button class="close" id="close" aria-label="Fechar">×</button><div class="eyebrow" id="panel-eyebrow"></div><h2 id="panel-title"></h2><div id="panel-body"></div><button class="primary" id="panel-action">Continuar a explorar <span>→</span></button></dialog>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
