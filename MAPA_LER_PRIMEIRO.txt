@@ -1,0 +1,37 @@
+MAPA DAS EXPLORAÇÕES · GRUPO PATRÍCIA PILAR
+
+1. Depois de transferir o ZIP, escolhe Extrair tudo.
+2. Abre MAPA.html no Chrome ou Edge. Não precisas de instalar programas.
+3. Clica numa exploração no mapa ou na lista para abrir a sua ficha.
+
+O ficheiro MAPA.html contém o mapa interativo completo, as fichas e as 14
+imagens aéreas fornecidas. Podes copiá-lo sozinho para outra pasta.
+
+As posições são os 14 pontos dos links Maps que enviaste: 13 explorações e
+a sede. São pontos de referência; não delimitam cada estufa ou propriedade.
+
+Usa a pesquisa por local, cultura ou pessoa e os filtros da lista.
+Todos os locais enquadra as 14 posições; Oeste aproxima o grupo do Oeste.
+Clica na fotografia aérea de uma ficha para a ampliar. Usa +/−, a roda ou
+arrasta a imagem. Ajustar regressa ao enquadramento inicial.
+
+Satélite usa o serviço público de imagens Esri. Mapa usa OpenStreetMap.
+Estes fundos precisam de Internet e podem ficar indisponíveis na tua ligação.
+Sem rede mantém os pontos numa base vetorial de referência Natural Earth.
+As fichas e as fotografias enviadas continuam acessíveis sem Internet.
+
+Não é necessária uma chave Google ou um serviço pago configurado por ti.
+As fotografias enviadas são referências guardadas, sem atualização em direto.
+A informação descritiva é a fornecida, com edições anteriores do navegador
+quando disponíveis. Os locais usam os pontos originais dos links.
+
+Deusas: 18 ha projetados, com cerca de 4 ha quase concluídos. Estes valores
+não representam área em produção. Os 129,23 ha declarados excluem Deusas.
+
+Ritual Frutado: o link e a imagem fornecidos têm a designação Vale da Borra.
+Essa diferença de nomes é assinalada; não se presume que sejam o mesmo local.
+
+Os ficheiros KML e GeoJSON são opcionais, para abrir os pontos noutras
+aplicações de mapas. Não são necessários para utilizar MAPA.html.
+
+Código e atualizações: https://github.com/demoapps26/Emanuel

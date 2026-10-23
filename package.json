@@ -10,14 +10,19 @@
     "test": "node --test tests/*.test.js",
     "test:browser": "node tests/browser.mjs",
     "standalone": "npm run build && node scripts/standalone.mjs",
-    "package:download": "npm run standalone && python3 scripts/package-download.py"
+    "package:download": "npm run standalone && python3 scripts/package-download.py",
+    "map:dev": "vite --host 0.0.0.0 --port 5174",
+    "map:build": "vite build --config vite.map.config.mjs && node scripts/build-map.mjs",
+    "map:package": "npm run map:build && python3 scripts/package-map.py",
+    "test:map:browser": "node tests/map-browser.mjs"
   },
   "dependencies": {
+    "leaflet": "1.9.4",
     "three": "0.180.0"
   },
   "devDependencies": {
-    "vite": "7.3.1",
-    "@playwright/test": "1.58.2"
+    "@playwright/test": "1.58.2",
+    "vite": "7.3.1"
   },
   "engines": {
     "node": ">=22.12"
