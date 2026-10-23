@@ -90,6 +90,7 @@ function upgradePeople(source) {
       data.assignments.push({ personId, siteId, role });
   };
   add("hernani", "greenaura", "Apoio técnico");
+  add("rafael", "deusas", "Equipamentos e apoio à construção");
   for (const siteId of ["lagoa", "varzea", "fenomeno"])
     add("cesar", siteId, "Apoio técnico");
   const responsible = data.assignments.find(
@@ -270,8 +271,12 @@ function validDate(v) {
 export function loadData(storage) {
   try {
     const raw = storage.getItem(STORAGE_KEY);
+    const data = raw ? applySuppliedLocations(validateData(JSON.parse(raw))) : initialData();
+    // Confirmed after the original collection; restore it in older saved copies.
+    if (!data.assignments.some(a => a.personId === 'rafael' && a.siteId === 'deusas'))
+      data.assignments.push({ personId: 'rafael', siteId: 'deusas', role: 'Equipamentos e apoio à construção' });
     return {
-      data: raw ? applySuppliedLocations(validateData(JSON.parse(raw))) : initialData(),
+      data,
       warning: null,
     };
   } catch {

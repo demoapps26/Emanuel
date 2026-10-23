@@ -4,6 +4,6 @@ export default defineConfig({
   build: {
     outDir: 'dist-mapa',
     assetsInlineLimit: Infinity,
-    rollupOptions: { input: 'mapa-entry.html' },
+    rollupOptions: { input: 'mapa-entry.html', output: { inlineDynamicImports: true } },
   },
 });

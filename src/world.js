@@ -8,18 +8,29 @@ import { createHeavyVehicle } from './heavy-vehicles.js';
 import { getSiteLayout } from './sites.js';
 import { vehicleFootprint } from './simulation.js';
 import { VEHICLE_NAMES,VEHICLE_SPECS } from './fleet.js';
+import { createVisitorLandscape } from './visitor-landscape.js';
 
-export function createWorld(canvas) {
+export function createWorld(canvas, { cinematic = false } = {}) {
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
-  renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;
+  const initialWidth=canvas.clientWidth||innerWidth,initialHeight=canvas.clientHeight||innerHeight;
+  renderer.setSize(initialWidth,initialHeight,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=cinematic?.93:1.04;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.08,3200);
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(55,initialWidth/initialHeight,.08,3200);
   const sky=new Sky();sky.scale.setScalar(1800);Object.assign(sky.material.uniforms.turbidity,{value:4});sky.material.uniforms.rayleigh.value=1.8;sky.material.uniforms.sunPosition.value.set(-.8,.65,.4);scene.add(sky);
   const environment=skyEnvironment();scene.environment=environment;scene.environmentIntensity=.5;scene.fog=new THREE.Fog(0xcad9dd,650,1800);
-  scene.add(new THREE.HemisphereLight(0xe4eff7,0x71754c,1.15));
+  scene.add(new THREE.HemisphereLight(0xe4eff7,0x71754c,cinematic?.72:1.15));
   const sun=new THREE.DirectionalLight(0xffe6bc,2.8);sun.position.set(-80,110,65);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.00015;sun.shadow.normalBias=.025;
   Object.assign(sun.shadow.camera,{left:-65,right:65,top:65,bottom:-65,near:1,far:350});scene.add(sun,sun.target);
+  if(cinematic){sun.intensity=2.3;sky.material.uniforms.sunPosition.value.set(-.8,.52,.65);}
+  if(cinematic){
+    sky.material.dispose();
+    sky.material=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,
+      uniforms:{zenith:{value:new THREE.Color(0x6b9dc9)},horizon:{value:new THREE.Color(0xe3e9df)}},
+      vertexShader:'varying vec3 direction;void main(){direction=position;vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.0);gl_Position=p.xyww;}',
+      fragmentShader:'uniform vec3 zenith;uniform vec3 horizon;varying vec3 direction;void main(){float height=clamp(normalize(direction).y,0.0,1.0);gl_FragColor=vec4(mix(horizon,zenith,pow(height,.38)),1.0);\n#include <colorspace_fragment>\n}'
+    });
+  }
   const ground=terrainMaterials(),persistentMaterials=new Set(Object.values(ground));
   const landGeo=new THREE.PlaneGeometry(8000,8000);landGeo.rotateX(-Math.PI/2);
   const uv=landGeo.attributes.uv,p=landGeo.attributes.position;
@@ -57,6 +68,7 @@ export function createWorld(canvas) {
   function loadSite(state) {
     if(loadedSite===state.siteId)return;
     disposeFarm();siteLayout=getSiteLayout(state.siteId);farm=createFarmScenery(siteLayout);scene.add(farm.group);
+    if(cinematic)farm.group.add(createVisitorLandscape(state.player,ground));
     for(const road of siteLayout.roads) {
       surface(farm.group,road,ground.concrete,1.3,.005);
       surface(farm.group,road,siteLayout.id==='sede'?ground.road:ground.concrete,0,.018);
@@ -74,7 +86,8 @@ export function createWorld(canvas) {
       const h=b.type==='terrace'?b.y:(b.height||6.2)+(b.y||0),m=new THREE.Mesh(new THREE.BoxGeometry(b.w,h,b.d));
       m.position.set(b.x,h/2,b.z);m.rotation.y=-(b.rotation||0);m.updateMatrixWorld();cameraObstacles.push(m);
     }
-    loadedSite=state.siteId;first=true;wasDriving=false;orbit=0;zoom=1;
+    loadedSite=state.siteId;first=true;wasDriving=false;
+    if(!cinematic){orbit=0;zoom=1;}
     quality(qualityValue);
   }
   function quality(value) {
@@ -91,7 +104,7 @@ export function createWorld(canvas) {
         mesh.material=lowMaterials.get(original.uuid);
       }else if(value!=='low'&&fullMaterials.has(mesh.material.uuid))mesh.material=fullMaterials.get(mesh.material.uuid);
     });
-    renderer.shadowMap.enabled=value!=='low';renderer.setPixelRatio(Math.min(devicePixelRatio,value==='high'?1.75:value==='medium'?1.25:.65));
+    renderer.shadowMap.enabled=value!=='low';renderer.setPixelRatio(Math.min(devicePixelRatio,value==='high'?1.5:value==='medium'?1:.75));
     sun.shadow.mapSize.set(value==='high'?2048:1024,value==='high'?2048:1024);sun.shadow.map?.dispose();sun.shadow.map=null;
   }
   const contacts=new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0x1e281b,map:contactShadowTexture(),transparent:true,opacity:.3,depthWrite:false}),Object.keys(fleet).length+actors.entityPersonIds.length+1);
@@ -102,7 +115,7 @@ export function createWorld(canvas) {
   canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);
   canvas.addEventListener('pointermove',e=>{if(!dragging)return;orbit-=(e.clientX-lastX)*.005;pitch=Math.max(.10,Math.min(1.15,pitch+(e.clientY-lastY)*.004));lastX=e.clientX;lastY=e.clientY;});
   canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.55,Math.min(3,zoom+e.deltaY*.001));},{passive:false});
-  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+  addEventListener('resize',resize);
   function render(state,dt,movement,overview=false) {
     loadSite(state);actors.update(state,dt,movement);
     // The aerial camera is hundreds of metres away. A larger near plane keeps
@@ -119,14 +132,16 @@ export function createWorld(canvas) {
       }
     }
     const contactItems=[{...state.player,w:1.1,d:1.1,visible:!state.driving},...(state.characters||[]).map(c=>({...c,w:1,d:1,visible:true})),...vehicles.flatMap(v=>vehicleFootprint(v).map(r=>({x:r.x,z:r.z,yaw:r.rotation,w:r.w+.5,d:r.d+.4,visible:true})))];
+    contacts.count=contactItems.length;
     contactItems.forEach((p,i)=>{dummy.position.set(p.x,.065,p.z);dummy.rotation.set(-Math.PI/2,0,-(p.yaw||0));dummy.scale.set(p.visible?p.w:0,p.visible?p.d:0,1);dummy.updateMatrix();contacts.setMatrixAt(i,dummy.matrix);});contacts.instanceMatrix.needsUpdate=true;
     if(state.driving) {
       if(!wasDriving)carOrbit=state.car.yaw;
       const delta=Math.atan2(Math.sin(state.car.yaw-carOrbit),Math.cos(state.car.yaw-carOrbit));carOrbit+=delta*Math.min(1,dt*2);
     }else if(wasDriving)orbit+=carOrbit;
     const p=state.driving?state.car:state.player,spec=VEHICLE_SPECS[state.car.kind]||{},yaw=orbit+(state.driving?carOrbit:0);
+    if(cinematic)sky.position.set(p.x,0,p.z);
     target.set(p.x,(p.y||0)+(state.driving?(spec.cameraHeight||1.8):1.15),p.z);
-    sun.position.set(p.x-80,110,p.z+65);sun.target.position.set(p.x,0,p.z);
+    sun.position.set(p.x-80,cinematic?60:110,p.z+65);sun.target.position.set(p.x,0,p.z);
     const distance=(state.driving?(spec.cameraDistance||Math.max(9,spec.length*1.25)):6)*zoom;
     desired.set(p.x-Math.sin(yaw)*distance*Math.cos(pitch),target.y+Math.sin(pitch)*distance,p.z+Math.cos(yaw)*distance*Math.cos(pitch));
     offset.copy(desired).sub(target);const length=offset.length();raycaster.set(target,offset.normalize());raycaster.far=length;
@@ -135,7 +150,9 @@ export function createWorld(canvas) {
     farm.update(p,qualityValue,overview);camera.position.lerp(desired,first?1:1-Math.exp(-dt*10));camera.position.y=Math.max(.6,camera.position.y);camera.lookAt(target);renderer.render(scene,camera);first=false;wasDriving=state.driving;return yaw;
   }
   const gl=renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info'),name=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'';
-  return {render,quality,loadSite,renderer,entityPersonIds:actors.entityPersonIds,recommendedQuality:/swiftshader|llvmpipe|software/i.test(name)?'low':'high',resetCamera(){orbit=0;pitch=.24;zoom=1;first=true;wasDriving=false;}};
+  function resize(){const width=canvas.clientWidth||innerWidth,height=canvas.clientHeight||innerHeight;camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height,false);}
+  function projectPoint(x,y,z){const p=new THREE.Vector3(x,y,z).project(camera),rect=canvas.getBoundingClientRect();return {x:rect.left+(p.x+1)*rect.width/2,y:rect.top+(1-p.y)*rect.height/2,visible:p.z>-1&&p.z<1&&Math.abs(p.x)<.9&&Math.abs(p.y)<.85};}
+  return {render,quality,loadSite,renderer,resize,projectPoint,entityPersonIds:actors.entityPersonIds,recommendedQuality:/swiftshader|llvmpipe|software/i.test(name)?'low':'high',resetCamera(yaw=0){orbit=yaw;pitch=cinematic?.18:.24;zoom=cinematic?1.12:1;first=true;wasDriving=false;}};
 }
 export function drawMap(canvas,state,large=false) {
   const layout=getSiteLayout(state.siteId),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,b=layout.bounds;

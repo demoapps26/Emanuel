@@ -1,14 +1,36 @@
-# Patrícia Pilar · Mapa interativo das explorações
+# Patrícia Pilar · Mapa e visita em 3D
 
-Um mapa para consultar as **13 explorações e a sede**. Clica num ponto ou num nome para abrir a área declarada, culturas, responsáveis, observações e fotografia aérea do local. As localizações vêm dos links Maps que enviaste.
+Explora as **13 explorações e a sede** com uma personagem em terceira pessoa e alterna para o mapa geográfico. A apresentação inclui a ficha do local, ponto de consulta no cenário, minimapa e fotografias aéreas originais. As localizações do mapa vêm dos links Maps fornecidos.
+
+![Captura real da visita em 3D](docs/visita_3d_v1.1.png)
 
 ## Abrir o mapa
 
-1. **[Transferir o mapa — ZIP](https://github.com/demoapps26/Emanuel/raw/refs/heads/main/downloads/Mapa_Exploracoes_Patricia_Pilar_v1.0.zip)**.
+1. **[Transferir o mapa com visita em 3D — ZIP](https://github.com/demoapps26/Emanuel/raw/refs/heads/main/downloads/Mapa_Exploracoes_Patricia_Pilar_v1.1.zip)**.
 2. Nas Transferências, clica com o botão direito no ZIP e escolhe **Extrair tudo**.
 3. Abre **MAPA.html** no Chrome ou Edge.
 
-O ficheiro MAPA.html contém a aplicação, as fichas e as 14 fotografias aéreas. Não precisas de instalar programas nem de uma chave Google para o usar. O ZIP inclui também as localizações em KML e GeoJSON.
+O ficheiro MAPA.html contém a aplicação completa, os cenários, as fichas e as 14 fotografias aéreas. Abre na vista **Explorar 3D**. Precisas de um navegador com WebGL2 e aceleração gráfica recomendada; não precisas de instalar programas ou configurar uma chave Google. O ZIP inclui também as localizações em KML e GeoJSON.
+
+## Visitar com a personagem
+
+Em **Explorações / Mudar exploração**, escolhe o local. A personagem chega a um pátio de visita e podes andar à volta das estufas. **Consultar exploração** abre a mesma ficha disponível no mapa. As mudanças entre locais são viagens rápidas.
+
+| Controlo | Ação |
+| --- | --- |
+| WASD / setas | Andar; ao volante, acelerar, virar, travar e recuar |
+| Arrastar rato / roda | Rodar a câmara / aproximar e afastar |
+| Shift | Correr |
+| M / I | Mapa geográfico / informação da exploração |
+| B / V | Vista aérea do cenário / escolher veículo |
+| E / Espaço | Entrar ou sair depois de parar / travar |
+| F / Esc | Consultar pessoa próxima / pausar |
+
+No telemóvel há botões de direção. O minimapa alterna entre a **fotografia aérea fornecida** e a **planta aproximada com a posição da personagem**. A posição local só é desenhada nessa planta. Em Qualidade podes escolher Leve, Equilibrada ou Alta.
+
+O Rafael aparece no **projeto das Deusas**, associado a equipamentos e apoio à construção. Foi retirado da descrição geral das outras explorações. Os nomes e relações usam uma identidade única por pessoa.
+
+As estruturas, materiais, plantas, pátio de visita e personagem são modelos procedurais. A implantação e a escala local são aproximadas a partir das referências; o resultado continua estilizado e não iguala o realismo da imagem de conceito. As imagens aéreas originais permanecem disponíveis para comparação.
 
 ## Consultar uma exploração
 
@@ -18,6 +40,7 @@ O ficheiro MAPA.html contém a aplicação, as fichas e as 14 fotografias aérea
 - Usa a roda do rato ou os botões **+ / −** para ampliar o mapa e arrasta para o deslocar.
 - Abre a **fotografia aérea** na ficha e amplia-a com os botões ou a roda do rato. Podes arrastar a fotografia para consultar pormenores.
 - A ligação **Google Maps** de cada ficha abre o ponto original fornecido.
+- **Explorar com personagem · 3D** abre o cenário da exploração escolhida.
 
 As fichas distinguem explorações, construção e sede. As pessoas mantêm as suas associações: por exemplo, César é responsável da Framboesa 2 e apoia Lagoa, Várzea e Fenómeno. Responsáveis não identificados aparecem por confirmar.
 
@@ -67,12 +90,13 @@ O empacotamento do ZIP usa Python 3; isso só é necessário a quem prepara a en
 ```bash
 npm test
 npm run test:map:browser
+npm run test:explore:browser
 ```
 
 O teste de navegador requer um servidor do mapa ativo e Chromium. Os resultados são registados depois da execução; não é necessário executar testes para usar MAPA.html.
 
-Por omissão, o teste abre `http://127.0.0.1:8090/MAPA.html`. Podes servir a pasta do projeto com `python3 -m http.server 8090 --bind 127.0.0.1` noutro terminal ou indicar um URL em `TEST_MAP_BASE_URL`.
+Por omissão, os testes abrem `http://127.0.0.1:8090/MAPA.html`; o teste de consulta usa `?vista=mapa`. Podes servir a pasta do projeto com `python3 -m http.server 8090 --bind 127.0.0.1` noutro terminal ou indicar `TEST_MAP_BASE_URL` / `TEST_EXPLORE_URL`.
 
-Foram aprovados 66 testes e 24 verificações no navegador, incluindo os 14 pontos e as 14 imagens originais. Os resultados e limites da verificação dos fundos online estão em [docs/MAPA_VALIDACAO.md](docs/MAPA_VALIDACAO.md).
+Os resultados e limites das verificações estão em [docs/MAPA_VALIDACAO.md](docs/MAPA_VALIDACAO.md).
 
 Os ficheiros anteriores do jogo foram conservados. A documentação dessa versão está arquivada em [docs/JOGO_v0.4.md](docs/JOGO_v0.4.md). A entrada do projeto atual é **MAPA.html**.

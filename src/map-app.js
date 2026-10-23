@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './map-app.css';
+import './map-explorer.css';
 import { loadData } from './data.js';
 import { createMapSites, filterMapSites, mapSummary } from './map-model.js';
 import { renderSiteDetails, referenceImage, escapeHtml as esc } from './map-details.js';
@@ -24,6 +25,7 @@ const people = data.people.filter(p => assigned.has(p.id)).sort((a, b) => a.name
 document.querySelector('#app').innerHTML = `
   <header class="topbar" id="topbar">
     <a class="brand" href="#" aria-label="Mapa das explorações · início"><span class="brand-mark">${icons.leaf}</span><span class="brand-copy"><strong>Grupo Patrícia Pilar</strong><small>MAPA DAS EXPLORAÇÕES</small></span></a>
+    <nav class="view-tabs" aria-label="Modo de visita"><button id="view-map" aria-pressed="true">Mapa</button><button id="view-explore" aria-pressed="false">Explorar <span>3D</span></button></nav>
     <span class="header-count">${summary.locations} locais · ${summary.farms} explorações e sede</span>
     <nav class="header-actions" aria-label="Navegação do mapa">
       <button class="button button-ghost" id="show-list" aria-controls="sidebar" aria-expanded="false">Explorações</button>
@@ -42,6 +44,7 @@ document.querySelector('#app').innerHTML = `
     <div id="site-list"></div>
     <p class="sidebar-footnote">¹ Área declarada das explorações, excluindo o projeto das Deusas. Pontos dos links Maps enviados.</p>
   </aside>
+  <section id="explore-root" aria-label="Navegação em 3D com personagem" hidden><div class="explore-loading">A preparar a exploração em 3D…</div></section>
   <main class="map-shell" aria-label="Mapa interativo">
     <div id="map" aria-label="Localizações das explorações" data-selected="" data-layer="satellite"></div>
     <div class="map-layer-switch" role="group" aria-label="Fundo do mapa"><button class="map-layer-button active" data-layer="satellite" aria-pressed="true">Satélite</button><button class="map-layer-button" data-layer="streets" aria-pressed="false">Mapa</button><button class="map-layer-button" data-layer="reference" aria-pressed="false">Sem rede</button></div>
@@ -69,6 +72,33 @@ for (const [name, lat, lng] of [['Torres Vedras', 39.0911, -9.2586], ['Lourinhã
   L.marker([lat, lng], { interactive: false, keyboard: false, icon: L.divIcon({ className: 'context-place', html: esc(name), iconSize: [110, 20], iconAnchor: [55, 10] }) }).addTo(labels);
 }
 let selectedId = null, shown = sites, currentLayer = 'satellite', activeTiles = null, tileFailures = 0, tileLoaded = 0, loadTimer;
+let activeView = 'map', explorer = null, explorerPromise = null;
+function showMap(siteId = null) {
+  activeView = 'map'; explorer?.activate(false); $('#explore-root').hidden = true;
+  document.body.classList.remove('mode-explore');
+  $('#view-map').setAttribute('aria-pressed', 'true'); $('#view-explore').setAttribute('aria-pressed', 'false');
+  map.invalidateSize();
+  if (siteId) selectSite(siteId); else { closeDetails(); fitSites(shown); }
+}
+async function enterExplore(id = selectedId || explorer?.getSiteId() || 'tomates_oeste') {
+  activeView = 'explore'; closeDetails(); setListOpen(false);
+  document.body.classList.add('mode-explore'); $('#explore-root').hidden = false;
+  $('#view-map').setAttribute('aria-pressed', 'false'); $('#view-explore').setAttribute('aria-pressed', 'true');
+  try {
+    if (!explorerPromise) explorerPromise = import('./map-explorer.js').then(module => {
+      explorer = module.createMapExplorer($('#explore-root'), { sites, onMap: showMap, onInfo: selectSite, onCatalog: () => setListOpen(true), onPhoto: openPhoto, onMessage: toast });
+      return explorer;
+    });
+    await explorerPromise;
+    if (activeView !== 'explore') return;
+    if (explorer.getSiteId() !== id) explorer.switchSite(id);
+    selectedId = id; renderList(); explorer.activate(true);
+    try { history.replaceState(null, '', `#${id}`); } catch { /* Optional in restricted local viewers. */ }
+  } catch {
+    $('#explore-root').innerHTML = '<div class="explore-loading"><strong>Não foi possível iniciar o 3D neste navegador.</strong><p>Podes consultar as localizações, fotografias e fichas no mapa.</p><button id="explore-open-map">Abrir mapa</button></div>';
+    $('#explore-root').dataset.error = 'webgl'; $('#explore-open-map').onclick = () => showMap();
+  }
+}
 const markers = new Map();
 function pinIcon(site, selected = false) {
   return L.divIcon({ className: `farm-pin ${site.category === 'construction' ? 'construction' : site.category === 'headquarters' ? 'headquarters' : ''}${selected ? ' selected' : ''}`, html: `<span class="pin-inner" data-pin="${esc(site.id)}" data-lat="${site.coordenadas.lat}" data-lng="${site.coordenadas.lng}">${String(site.number).padStart(2, '0')}</span>`, iconSize: [36, 44], iconAnchor: [18, 42], tooltipAnchor: [0, -40] });
@@ -123,7 +153,7 @@ function selectSite(id, focus = true) {
   selectedId = id; $('#detail-content').innerHTML = renderSiteDetails(site, data); detailPanel.hidden = false;
   $('#map-intro').hidden = true; mapElement.dataset.selected = id;
   document.body.classList.add('detail-open'); setListOpen(false); renderList();
-  if (focus) focusSite(site);
+  if (focus && activeView === 'map') focusSite(site);
   try { history.replaceState(null, '', `#${encodeURIComponent(id)}`); } catch { /* Some local HTML viewers restrict history changes. */ }
 }
 function closeDetails() {
@@ -134,7 +164,7 @@ function closeDetails() {
 function applyFilters() {
   shown = filterMapSites(sites, data, { query: $('#search').value, crop: $('#crop-filter').value, person: $('#person-filter').value });
   if (selectedId && !shown.some(site => site.id === selectedId)) closeDetails();
-  renderList(); fitSites(shown);
+  renderList(); if (activeView === 'map') fitSites(shown);
 }
 function clearFilters() { $('#search').value = ''; $('#crop-filter').value = ''; $('#person-filter').value = ''; applyFilters(); }
 function mapStatus(message, offline = false) {
@@ -195,6 +225,7 @@ $('#photo-stage').addEventListener('pointerdown', event => { if (photoScale <= 1
 $('#photo-stage').addEventListener('pointermove', event => { if (!photoDrag) return; photoX = photoDrag.ox + event.clientX - photoDrag.x; photoY = photoDrag.oy + event.clientY - photoDrag.y; renderPhotoTransform(); });
 for (const event of ['pointerup', 'pointercancel']) $('#photo-stage').addEventListener(event, () => photoDrag = null);
 $('#detail-content').addEventListener('click', async event => {
+  const visit = event.target.closest('[data-visit-3d]'); if (visit) enterExplore(visit.dataset.visit3d);
   const photo = event.target.closest('[data-enlarge-photo]'); if (photo) openPhoto(photo.dataset.enlargePhoto);
   const copy = event.target.closest('[data-copy-coordinates]');
   if (copy) {
@@ -202,24 +233,28 @@ $('#detail-content').addEventListener('click', async event => {
     catch { const text = copy.parentElement.querySelector('code'); const selection = getSelection(), range = document.createRange(); range.selectNodeContents(text); selection.removeAllRanges(); selection.addRange(range); toast('Coordenadas selecionadas. Usa Ctrl+C para copiar.'); }
   }
 });
-$('#site-list').addEventListener('click', event => { const button = event.target.closest('[data-site]'); if (button) selectSite(button.dataset.site); if (event.target.closest('[data-clear-filters]')) clearFilters(); });
+$('#site-list').addEventListener('click', event => { const button = event.target.closest('[data-site]'); if (button) { if(activeView === 'explore') enterExplore(button.dataset.site); else selectSite(button.dataset.site); } if (event.target.closest('[data-clear-filters]')) clearFilters(); });
 $('#close-details').onclick = closeDetails;
 $('#search').addEventListener('input', applyFilters);
 $('#crop-filter').onchange = applyFilters; $('#person-filter').onchange = applyFilters;
 $('#clear-filters').onclick = clearFilters;
 $('#show-list').onclick = () => { if (!detailPanel.hidden) closeDetails(); setListOpen(!document.body.classList.contains('list-open')); };
-$('#fit-all').onclick = () => { clearFilters(); closeDetails(); setListOpen(false); fitSites(sites); $('#map-intro').hidden = false; };
-$('#fit-west').onclick = () => { closeDetails(); setListOpen(false); fitSites(shown.filter(site => site.region === 'Oeste')); };
+$('#fit-all').onclick = () => { showMap(); clearFilters(); closeDetails(); setListOpen(false); fitSites(sites); $('#map-intro').hidden = false; };
+$('#fit-west').onclick = () => { showMap(); closeDetails(); setListOpen(false); fitSites(shown.filter(site => site.region === 'Oeste')); };
+$('#view-map').onclick = () => showMap(); $('#view-explore').onclick = () => enterExplore();
 for (const button of document.querySelectorAll('.map-layer-button')) button.onclick = () => setLayer(button.dataset.layer);
 $('#retry-tiles').onclick = () => setLayer(currentLayer);
 $('#help').onclick = () => $('#help-dialog').showModal(); $('#close-help').onclick = () => $('#help-dialog').close();
 $('#download-kml').onclick = () => { const url = URL.createObjectURL(new Blob([kmlText], { type: 'application/vnd.google-earth.kml+xml' })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = 'Exploracoes_Patricia_Pilar.kml'; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
 $('.brand').onclick = event => { event.preventDefault(); $('#fit-all').click(); };
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#photo-dialog').open && !$('#help-dialog').open) { closeDetails(); setListOpen(false); } });
-addEventListener('resize', () => { map.invalidateSize(); if (selectedId) focusSite(sites.find(site => site.id === selectedId)); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('#photo-dialog').open && !$('#help-dialog').open && (!detailPanel.hidden || document.body.classList.contains('list-open'))) { event.preventDefault(); closeDetails(); setListOpen(false); } });
+addEventListener('resize', () => { if(activeView==='map'){map.invalidateSize(); if(selectedId)focusSite(sites.find(site=>site.id===selectedId));} });
 renderList(); fitSites(sites); setLayer('satellite');
 if (innerWidth <= 760) setListOpen(true);
 let initialId = '';
 try { initialId = decodeURIComponent(location.hash.slice(1)); } catch { /* Ignore malformed URL fragments. */ }
 if (sites.some(site => site.id === initialId)) selectSite(initialId);
+// An explicit map URL supports lightweight geographic consultation; the main
+// entry opens the visitor's 3D scene requested for this version.
+if (new URLSearchParams(location.search).get('vista') !== 'mapa') enterExplore(initialId || 'tomates_oeste');
 if (warning) toast(warning);

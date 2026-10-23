@@ -6,7 +6,7 @@ import { initialData } from '../src/data.js';
 import { createMapSites } from '../src/map-model.js';
 import locations from '../dados/localizacoes_maps.json' with { type: 'json' };
 
-const base = process.env.TEST_MAP_BASE_URL || 'http://127.0.0.1:8090/MAPA.html';
+const base = process.env.TEST_MAP_BASE_URL || 'http://127.0.0.1:8090/MAPA.html?vista=mapa';
 const data = initialData(), sites = createMapSites(data);
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -122,7 +122,9 @@ try {
     await expect(page.locator('#details')).toContainText('≈ 4');
     await expect(page.locator('#details')).toContainText('não representam área em produção');
     await expect(page.locator('#details .crop-pill')).toHaveCount(0);
-    await expect(page.locator('#details')).toContainText('Responsáveis por confirmar');
+    await expect(page.locator('#details [data-person-id="rafael"]')).toHaveCount(1);
+    await expect(page.locator('#details')).toContainText('Equipamentos e apoio à construção');
+    await expect(page.locator('#details .detail-general')).not.toContainText('Rafael');
     await select('nutriveg_2');
     await expect(page.locator('#details')).toContainText('11 estufas');
     await expect(page.locator('#details')).toContainText('madeira');

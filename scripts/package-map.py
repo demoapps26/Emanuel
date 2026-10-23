@@ -7,7 +7,7 @@ root = Path(__file__).resolve().parent.parent
 html = (root / "MAPA.html").read_bytes()
 assert html == (root / "docs/mapa.html").read_bytes()
 assert b'<script type="module">' in html
-destination = root / "downloads/Mapa_Exploracoes_Patricia_Pilar_v1.0.zip"
+destination = root / "downloads/Mapa_Exploracoes_Patricia_Pilar_v1.1.zip"
 destination.parent.mkdir(exist_ok=True)
 files = {
     "MAPA.html": html,

@@ -241,6 +241,7 @@ function createPerson(personId, shirtColor, palette, accessory) {
     shin.position.y = -0.421;
     leg.add(shin);
     knees.push(shin);
+    addMesh(leg, new THREE.SphereGeometry(.066, 12, 8), trousers, 0, -.413, 0, [1, 1, .9]);
     addMesh(
       shin,
       new THREE.CapsuleGeometry(0.060, 0.245, 4, 12),

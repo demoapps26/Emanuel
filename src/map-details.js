@@ -55,8 +55,6 @@ function generalTeam(data) {
     const person = data.people?.find(candidate => candidate.id === role.personId);
     if (person) rows.push(`${person.name} — ${role.role}`);
   }
-  const equipment = data.people?.find(person => person.id === 'rafael');
-  if (equipment) rows.push(`${equipment.name} — equipamentos e apoio à construção de novas estufas`);
   return rows.length ? `<section class="detail-section detail-general">
     <h3>Responsabilidades transversais</h3>
     ${list(rows)}
@@ -97,6 +95,7 @@ export function renderSiteDetails(site, data) {
       <p class="detail-kicker detail-eyebrow">${headquarters ? 'Sede e logística' : site.tipo === 'demonstracao_ensaios' ? 'Demonstração e ensaios' : 'Exploração agrícola'}</p>
       <h2 class="detail-title">${safe(site.nome)}</h2>
       <div class="detail-meta"><span class="detail-badge${construction ? ' detail-badge-construction' : ''}">${headquarters ? 'Receção e expedição' : construction ? 'Em construção' : 'Culturas declaradas'}</span></div>
+      <button class="detail-visit-3d" data-visit-3d="${safe(site.id)}">Explorar com personagem · 3D</button>
     </div>
     ${!headquarters && Number.isFinite(site.area_ha) ? `<div class="detail-grid">
       <div class="detail-stat"><span>${site.area_e_projetada ? 'Área projetada' : 'Área declarada'}</span><strong>${number(site.area_ha)} <small>ha</small></strong></div>

@@ -45,10 +45,13 @@ export function addCrops(scene, blocks, options={}) {
   // Dense crop rows behind the individual leaves keep large covered areas planted
   // without thousands of distant plants. Front fruit remains geometric.
   const rowCanvas=document.createElement('canvas');rowCanvas.width=rowCanvas.height=128;
-  const rowContext=rowCanvas.getContext('2d');rowContext.fillStyle='#304e28';rowContext.fillRect(0,0,128,128);
-  for(let i=0;i<650;i++){rowContext.fillStyle=`hsl(${90+rand()*22} ${30+rand()*22}% ${17+rand()*20}%)`;rowContext.beginPath();rowContext.ellipse(rand()*128,rand()*128,2+rand()*5,3+rand()*7,rand()*6,0,Math.PI*2);rowContext.fill();}
+  const rowContext=rowCanvas.getContext('2d');
+  // Cut-out foliage leaves gaps and an irregular silhouette instead of a solid
+  // rectangular green wall. Nearby leaves and fruit retain their 3D geometry.
+  for(let i=0;i<220;i++){rowContext.fillStyle=`hsl(${88+rand()*28} ${35+rand()*22}% ${18+rand()*20}%)`;rowContext.beginPath();rowContext.ellipse(rand()*128,rand()*128,2+rand()*4,3+rand()*6,rand()*6,0,Math.PI*2);rowContext.fill();}
+  if(!cucumber&&!courgette)for(let i=0;i<18;i++){const x=rand()*128,y=65+rand()*60,g=rowContext.createRadialGradient(x-1,y-1,0,x,y,3);g.addColorStop(0,'#e67335');g.addColorStop(1,'#a8291d');rowContext.fillStyle=g;rowContext.beginPath();rowContext.ellipse(x,y,2.5,3,0,0,Math.PI*2);rowContext.fill();}
   const rowMap=new THREE.CanvasTexture(rowCanvas);rowMap.colorSpace=THREE.SRGBColorSpace;rowMap.wrapS=rowMap.wrapT=THREE.RepeatWrapping;
-  const rowMaterial=new THREE.MeshStandardMaterial({map:rowMap,color:0xc1cfac,roughness:1,side:THREE.DoubleSide});
+  const rowMaterial=new THREE.MeshStandardMaterial({map:rowMap,color:0xffffff,alphaTest:.35,roughness:.9,side:THREE.DoubleSide});
   const rowP=[],rowUv=[],rowI=[];
   for(const b of blocks) {
     const bays=Math.max(1,Math.round(b.w/8)),span=b.w/bays,height=courgette?.55:Math.min((options.height||4)-.5,2.8);

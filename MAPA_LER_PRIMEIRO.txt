@@ -1,11 +1,27 @@
-MAPA DAS EXPLORAÇÕES · GRUPO PATRÍCIA PILAR
+MAPA E VISITA EM 3D · GRUPO PATRÍCIA PILAR · 1.1
 
 1. Depois de transferir o ZIP, escolhe Extrair tudo.
 2. Abre MAPA.html no Chrome ou Edge. Não precisas de instalar programas.
-3. Clica numa exploração no mapa ou na lista para abrir a sua ficha.
+3. A vista Explorar abre com a personagem. Usa WASD para andar e arrasta
+   o rato para rodar a câmara. Em Explorações podes mudar de local.
 
 O ficheiro MAPA.html contém o mapa interativo completo, as fichas e as 14
-imagens aéreas fornecidas. Podes copiá-lo sozinho para outra pasta.
+imagens aéreas fornecidas e os cenários em 3D. Podes copiá-lo sozinho.
+Requer WebGL2; recomenda-se aceleração gráfica no navegador.
+
+WASD / setas: andar. Shift: correr. Arrastar rato: câmara. Roda: zoom.
+M: mapa geográfico. I: informação. B: vista aérea 3D. V: veículos.
+E: entrar/sair depois de parar. Espaço: travar. F: pessoa próxima.
+Esc: pausa. Há botões de direção para ecrãs táteis.
+
+Consultar exploração abre a ficha. O minimapa alterna entre a imagem
+aérea original e a planta aproximada com a posição da personagem.
+O Rafael está associado às Deusas, em equipamentos e construção,
+e foi retirado da descrição geral das outras explorações.
+
+Os modelos 3D, os pátios de visita e a escala local são aproximados.
+O aspeto continua estilizado e não iguala a imagem de conceito.
+As mudanças entre explorações são viagens rápidas.
 
 As posições são os 14 pontos dos links Maps que enviaste: 13 explorações e
 a sede. São pontos de referência; não delimitam cada estufa ou propriedade.

@@ -59,7 +59,7 @@ test("person filters reflect César's four farms, Hernani's confirmed farm and g
   assert.deepEqual(ids("hernani"), ["greenaura"]);
   assert.equal(ids("nuno").length, 14);
   assert.deepEqual(ids("miguel"), []);
-  assert.deepEqual(ids("rafael"), []);
+  assert.deepEqual(ids("rafael"), ["deusas"]);
   assert.deepEqual(ids("unknown"), []);
 });
 
@@ -71,7 +71,7 @@ test("Portuguese search ignores accents and combines all words with crop and act
   assert.deepEqual(filterMapSites(sites, data, { query: "CESAR", crop: "Pepino" }).map((site) => site.id), ["lagoa"]);
   assert.deepEqual(filterMapSites(sites, data, { query: "framboesa", crop: "Framboesa" }), []);
   assert.deepEqual(filterMapSites(sites, data, { query: "Miguel" }), []);
-  assert.deepEqual(filterMapSites(sites, data, { query: "Rafael" }), []);
+  assert.deepEqual(filterMapSites(sites, data, { query: "Rafael" }).map(site => site.id), ["deusas"]);
   assert.deepEqual(filterMapSites(sites, data, { query: "cesar", person: "hernani" }), []);
   assert.equal(filterMapSites(sites, data, { query: " ", crop: "", person: "" }).length, 14);
 });

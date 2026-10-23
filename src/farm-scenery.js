@@ -31,8 +31,8 @@ export function createFarmScenery(layout) {
   const material=(color,opts={})=>new THREE.MeshStandardMaterial({color,roughness:.85,...opts});
   const mats={
     steel:material(0xaeb9b8,{metalness:.65,roughness:.32}),wood:material(0x8d7050),
-    film:material(0xe8ebe1,{roughness:.34,metalness:.05,transparent:true,opacity:.48,depthWrite:false,side:THREE.DoubleSide}),
-    wall:material(0xf1f1e4,{roughness:.4,transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide}),
+    film:material(0xdce5df,{roughness:.26,metalness:.08,transparent:true,opacity:.27,depthWrite:false,side:THREE.DoubleSide}),
+    wall:material(0xe2e9e4,{roughness:.3,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}),
     floor:material(0xe2dfce),trim:material(0x1d5142),dark:material(0x313b37),white:material(0xe6e7dc),
     soil:material(0x9f8965),water:material(0x5d8e98,{roughness:.22,metalness:.35}),gravel:material(0xa9a48f),yellow:material(0xd8b54d),
   };
